@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>펭귄 모험 화면 레이아웃</title>
+<style>
+/* 이미지 없이 박스와 글자만 쓴 와이어프레임(화면 뼈대). 기준 문서: docs/유저저니.md */
+:root {
+  --bg: #f3f4f7;
+  --surface: #ffffff;
+  --ink: #1d2330;
+  --on-ink: #ffffff;
+  --muted: #667085;
+  --line: #d6dae3;
+  --wire: #e7eaf0;
+  --wire-strong: #c5ccd8;
+  --accent: #2f6fe4;
+  --accent-soft: #dce8fd;
+  --onb: #c2670f;
+  --par: #7442c2;
+  --warn: #c0392b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151c; --surface: #1b2030; --ink: #e8ebf2; --on-ink: #12151c;
+    --muted: #98a2b8; --line: #343b4f; --wire: #262c3d; --wire-strong: #3d465e;
+    --accent: #6ea0ff; --accent-soft: #23314f; --onb: #f0a04e; --par: #b794f4; --warn: #ff8a7a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151c; --surface: #1b2030; --ink: #e8ebf2; --on-ink: #12151c;
+  --muted: #98a2b8; --line: #343b4f; --wire: #262c3d; --wire-strong: #3d465e;
+  --accent: #6ea0ff; --accent-soft: #23314f; --onb: #f0a04e; --par: #b794f4; --warn: #ff8a7a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: system-ui, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  line-height: 1.55;
+  padding-block: 32px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1180px; margin: 0 auto; }
+h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.5px; text-wrap: balance; }
+h2 { font-size: 20px; margin: 0 0 4px; }
+.lead { color: var(--muted); margin: 0 0 20px; max-width: 70ch; }
+.nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 26px; }
+.nav a { text-decoration: none; color: var(--ink); border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 999px; font-size: 13px; }
+.nav a:hover, .nav a:focus-visible { border-color: var(--accent); outline: none; color: var(--accent); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-bottom: 18px; }
+.panel h3 { margin: 0 0 8px; font-size: 14px; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px 22px; font-size: 13px; color: var(--muted); align-items: center; }
+.legend span.item { display: inline-flex; align-items: center; gap: 6px; }
+.swatch { width: 26px; height: 16px; border-radius: 4px; background: var(--wire); border: 1px dashed var(--wire-strong); }
+
+.flow { display: flex; flex-wrap: wrap; gap: 6px 4px; align-items: center; font-size: 12.5px; margin: 6px 0 12px; }
+.flow b { font-weight: 700; margin-right: 6px; min-width: 64px; }
+.flow code { background: var(--wire); border-radius: 6px; padding: 2px 7px; font-family: inherit; }
+.flow i { font-style: normal; color: var(--muted); }
+
+section { margin-top: 44px; }
+section > .sec-head { border-bottom: 2px solid var(--ink); padding-bottom: 8px; margin-bottom: 22px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 34px 22px; justify-items: center; }
+figure.screen { margin: 0; width: 244px; }
+figure.screen.wide { width: 244px; }
+figcaption.cap { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+.tag { font-size: 11px; font-weight: 800; padding: 1px 7px; border-radius: 5px; color: #fff; }
+.tag.onb { background: var(--onb); }
+.tag.child { background: var(--accent); }
+.tag.par { background: var(--par); }
+:root[data-theme="dark"] .tag, :root:not([data-theme="light"]) .tag { color: #12151c; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .tag { color: #fff; } }
+.badge { font-size: 10.5px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--ink); }
+.badge.later { border-style: dashed; color: var(--muted); border-color: var(--muted); }
+.goto { margin: 8px 2px 0; font-size: 12px; color: var(--muted); }
+.goto b { color: var(--ink); }
+
+/* 폰 틀 */
+.phone { width: 244px; height: 488px; border: 2px solid var(--ink); border-radius: 28px; background: var(--surface); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+.phone.later { border-style: dashed; opacity: 0.8; }
+.hd { height: 36px; flex: none; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-size: 11.5px; font-weight: 700; gap: 6px; }
+.hd .coin { border: 1px solid var(--wire-strong); background: var(--wire); border-radius: 999px; padding: 1px 8px; font-size: 10.5px; }
+.hd .mini { border: 1px solid var(--ink); border-radius: 6px; padding: 1px 6px; font-size: 10px; font-weight: 600; }
+.body { flex: 1; min-height: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 7px; font-size: 11px; overflow: hidden; }
+.center { align-items: center; text-align: center; }
+.mid { justify-content: center; }
+.grow { flex: 1; min-height: 0; }
+
+/* 자리표시 박스(이미지, 영상, 사진이 들어갈 곳) */
+.ph { background: var(--wire); border: 1px dashed var(--wire-strong); border-radius: 8px; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); font-size: 10.5px; padding: 6px; line-height: 1.35; }
+.ph.round { border-radius: 50%; aspect-ratio: 1; }
+.ph.video { aspect-ratio: 16 / 9; width: 100%; }
+.title { font-size: 12.5px; font-weight: 700; }
+.small { font-size: 10px; color: var(--muted); }
+.btn { background: var(--ink); color: var(--on-ink); border-radius: 10px; padding: 8px; text-align: center; font-weight: 700; font-size: 11px; }
+.btn.ghost { background: transparent; border: 1.5px solid var(--ink); color: var(--ink); }
+.btn.off { background: var(--wire-strong); color: var(--muted); }
+.btn.sm { padding: 4px 8px; font-size: 10px; border-radius: 8px; }
+.row { display: flex; gap: 6px; align-items: center; }
+.row > * { flex: 1; }
+.row.between { justify-content: space-between; }
+.row.between > * { flex: none; }
+.card { border: 1px solid var(--line); border-radius: 10px; padding: 7px 8px; background: var(--surface); display: flex; flex-direction: column; gap: 4px; }
+.card.sel { border: 2px solid var(--accent); background: var(--accent-soft); }
+.card.dim { opacity: 0.55; }
+.card .r { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.ci { display: inline-block; width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--ink); margin-right: 4px; vertical-align: -1px; box-sizing: border-box; }
+.icon { width: 18px; height: 18px; border-radius: 5px; background: var(--wire-strong); flex: none; }
+.input { border: 1px solid var(--wire-strong); border-radius: 7px; padding: 5px 8px; background: var(--surface); color: var(--muted); font-size: 10.5px; }
+.input.s { display: inline-block; min-width: 38px; text-align: center; padding: 2px 6px; }
+.dots { display: flex; gap: 8px; justify-content: center; margin: 4px 0; }
+.dots i { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--ink); }
+.dots i.f { background: var(--ink); }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: auto; }
+.keypad div { background: var(--wire); border-radius: 8px; text-align: center; padding: 5px 0; font-weight: 700; font-size: 11.5px; }
+.keypad div.blank { background: transparent; }
+.tabs { display: flex; border-top: 1px solid var(--line); height: 46px; flex: none; }
+.tabs div { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 9.5px; color: var(--muted); }
+.tabs div.on { color: var(--accent); font-weight: 800; }
+.tabs i { width: 15px; height: 15px; border-radius: 4px; background: currentColor; opacity: 0.45; }
+.tabs div.on i { opacity: 1; }
+.bar { height: 7px; border-radius: 4px; background: var(--wire); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 62%; background: var(--accent); }
+.sheet { margin: 0 -12px -10px; border-top: 2px solid var(--ink); border-radius: 14px 14px 0 0; padding: 10px 12px; background: var(--surface); display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.dimbg { background: var(--wire); border-radius: 8px; flex: none; }
+.note { border: 1px dashed var(--muted); border-radius: 8px; padding: 5px 8px; color: var(--muted); font-size: 10px; }
+.sparkle { text-align: center; letter-spacing: 6px; color: var(--muted); font-size: 12px; }
+
+/* 길 */
+.node { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 10.5px; font-weight: 800; border: 2px solid var(--wire-strong); background: var(--wire); color: var(--muted); flex: none; }
+.node.done { background: var(--accent); color: var(--on-ink); border-color: var(--accent); }
+.node.now { background: var(--surface); color: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.node.rest { border-style: dashed; border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.path { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; justify-content: center; }
+.path .p { display: flex; align-items: center; gap: 6px; }
+.path .p.l { justify-content: flex-start; padding-left: 34px; }
+.path .p.r { justify-content: flex-end; padding-right: 34px; }
+.path .p.c { justify-content: center; }
+.path .ch { width: 40px; height: 40px; border-radius: 50%; }
+.legend-mini { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 10px; font-size: 11.5px; color: var(--muted); align-items: center; }
+.legend-mini .node { width: 20px; height: 20px; font-size: 8px; border-width: 1.5px; }
+.legend-mini span { display: inline-flex; align-items: center; gap: 4px; }
+
+@media (max-width: 520px) {
+  h1 { font-size: 23px; }
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>펭귄 모험 화면 레이아웃</h1>
+    <p class="lead">앱 이름은 임시입니다. 이미지 없이 박스와 글자만으로 그린 <strong>화면 뼈대</strong>입니다. 어떤 페이지가 필요한지, 각 화면에 무엇이 들어가는지 확인하려고 만들었습니다. 색, 그림, 캐릭터 모양은 디자인에서 정합니다. 기준 문서는 <code>docs/유저저니.md</code>입니다.</p>
+    <nav class="nav" aria-label="바로가기">
+      <a href="#overview">한눈에 보기</a>
+      <a href="#onboarding">온보딩 O1~O9</a>
+      <a href="#child">아이 영역 C1~C10 (홈 포함)</a>
+      <a href="#parent">부모 영역 P1~P7</a>
+    </nav>
+  </header>
+
+  <div class="panel" id="overview">
+    <h3>앱 구조</h3>
+    <p style="margin:0 0 10px">폰은 <strong>1대</strong>이고, 아이와 부모가 나눠 씁니다. 아래 탭은 <strong>홈 / 상점 / 부모</strong> 세 개이고, 부모 탭은 비밀번호(PIN)를 입력해야 들어갑니다. 처음 한 번은 온보딩을 거칩니다. 화면은 모두 <strong>26개</strong>이고 시연에 필요한 것이 25개, 나중에 만들 것이 1개(C7)입니다.</p>
+    <div class="flow"><b>처음 한 번</b>
+      <code>O1</code><i>→</i><code>O2</code><i>→</i><code>O3</code><i>→</i><code>O4</code><i>→</i><code>O5</code><i>→</i><code>O6</code><i>→</i><code>O7</code><i>→</i><code>O8</code><i>→</i><code>O9</code><i>→</i><code>C1 홈</code>
+    </div>
+    <div class="flow"><b>매일 (미션)</b>
+      <code>C1 홈</code><i>→</i><code>C2 미션 목록</code><i>→</i><code>C3 촬영</code><i>→</i><code>C4 기쁨</code><i>→</i><code>C5 코인</code><i>→</i><code>C6 단계 오름</code><i>→</i><code>C1 홈</code>
+    </div>
+    <div class="flow"><b>상점</b>
+      <code>C1 홈</code><i>→ 상점 탭 →</i><code>C9 상점</code><i>→</i><code>C10 구매 팝업</code>
+    </div>
+    <div class="flow"><b>부모</b>
+      <code>부모 탭</code><i>→</i><code>P1 PIN</code><i>→</i><code>P2 부모 홈</code><i>→</i><code>P3 인증 확인</code><i>/</i><code>P4 선물 확인</code><i>/</i><code>P5 미션 관리</code><i>/</i><code>P6 선물 관리</code><i>/</i><code>P7 구독 안내</code>
+    </div>
+    <div class="flow"><b>실패하면</b>
+      <code>P3에서 실패</code><i>→ 아이가 다음에 홈을 열면 →</i><code>C8 다시 해보자</code>
+    </div>
+    <h3 style="margin-top:14px">보는 법</h3>
+    <div class="legend">
+      <span class="item"><span class="tag onb">O</span> 온보딩</span>
+      <span class="item"><span class="tag child">C</span> 아이 영역</span>
+      <span class="item"><span class="tag par">P</span> 부모 영역</span>
+      <span class="item"><span class="badge">필수</span> 시연에 나옴</span>
+      <span class="item"><span class="badge later">나중</span> 이번에 안 만듦 (점선 틀)</span>
+      <span class="item"><span class="swatch"></span> 점선 회색 박스 = 그림, 영상, 사진이 들어갈 자리</span>
+    </div>
+  </div>
+
+  <!-- ================= 온보딩 ================= -->
+  <section id="onboarding">
+    <div class="sec-head">
+      <h2><span class="tag onb">O</span> 온보딩 (처음 한 번만)</h2>
+      <p class="lead" style="margin:0">영상을 보고, 부모가 비밀번호와 이름과 미션을 정하고, 아이와 첫 미션을 해서 1단계를 클리어합니다. 끝나면 2단계부터 본 게임입니다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag onb">O1</span> 시작 <span class="badge">필수</span></figcaption>
+        <div class="phone"><div class="body center">
+          <div class="ph grow" style="width:100%">배경<br>(눈 덮인 마을)</div>
+          <div class="ph" style="width:70%;height:42px">앱 로고</div>
+          <div class="ph round" style="width:84px">파란 펭귄<br>(숨 쉼)</div>
+          <div class="btn" style="width:100%">▶ 시작</div>
+        </div></div>
+        <p class="goto">소리를 켜기 위해 꼭 필요한 화면 → <b>O2</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag onb">O2</span> 온보딩 영상 <span class="badge">필수</span></figcaption>
+        <div class="phone"><div class="body mid" style="gap:0;padding:0">
+          <div class="dimbg grow" style="border-radius:0"></div>
+          <div class="ph video" style="border-radius:0;border-left:0;border-right:0">온보딩 영상<br>(가로 16:9, 소리, 10초)</div>
+          <div class="dimbg grow" style="border-radius:0;display:flex;align-items:flex-end;justify-content:center;padding:8px"><span class="small">건너뛰기 없음</span></div>
+        </div></div>
+        <p class="goto">끝나면 자동으로 → <b>O3</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag onb">O3</span> 하강 연출 <span class="badge">필수</span></figcaption>
+        <div class="phone"><div class="body center">
+          <div class="ph" style="width:100%;height:92px">100단계<br>성 + 갇힌 분홍 펭귄</div>
+          <div class="small">↓ 카메라가 길을 따라 스윽 내려옴 ↓</div>
+          <div class="path"><div class="p c"><div class="node">…</div></div><div class="p l"><div class="node">3</div></div><div class="p r"><div class="node">2</div></div></div>
+          <div class="ph round" style="width:56px">파란<br>펭귄</div>
+          <div class="node now">1</div>
+          <div class="title">공주를 구하러 가자!</div>
+        </div></div>
+        <p class="goto">→ <b>O4</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag onb">O4</span> 부모님께 폰 넘기기 <span class="badge">필수</span></figcaption>
+        <div class="phone"><div class="body center mid">
+          <div class="ph round" style="width:120px">파란 펭귄<br>(손짓)</div>
+          <div class="title" style="margin:10px 0">엄마 아빠를 불러 주세요!</div>
+          <div class="btn" style="width:100%">부모님이 왔어요</div>
+        </div></div>
+        <p class="goto">아이 → 부모로 넘어가는 화면 → <b>O5</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag onb">O5</span> PIN 만들기 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>부모님 설정</span><span>1 / 3</span></div>
+          <div class="body">
+            <div class="title center" style="text-align:center">부모님만 아는 비밀번호<br>4자리를 만들어 주세요</div>
+            <div class="dots"><i class="f"></i><i class="f"></i><i></i><i></i></div>
+            <div class="small" style="text-align:center">두 번 입력해서 확인해요</div>
+            <div class="keypad" data-keypad></div>
+          </div>
+        </div>
+        <p class="goto">→ <b>O6</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag onb">O6</span> 아이 이름 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>부모님 설정</span><span>2 / 3</span></div>
+          <div class="body">
+            <div class="title" style="margin-top:20px">아이 이름을 알려 주세요</div>
+            <div class="input">하늘</div>
+            <div class="small">이름은 상점의 “○○의 코인” 등에 쓰여요</div>
+            <div class="grow"></div>
+            <div class="btn">다음</div>
+          </div>
+        </div>
+        <p class="goto">비워 두면 다음으로 못 가요 → <b>O7</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag onb">O7</span> 미션 고르기 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>부모님 설정</span><span>3 / 3</span></div>
+          <div class="body" style="gap:5px">
+            <div class="title">처음엔 미션 1개를 골라요</div>
+            <div class="card sel"><div class="r"><span>◉ 양치하기</span><span class="small">영상</span></div><div class="small">영상 길이 <span class="input s">15</span> 초 (5~30)</div></div>
+            <div class="card"><div class="r"><span>○ 손씻기</span><span class="small">영상</span></div></div>
+            <div class="card"><div class="r"><span>○ 비타민 먹기</span><span class="small">사진</span></div></div>
+            <div class="card"><div class="r"><span>○ 책읽기</span><span class="small">사진</span></div></div>
+            <div class="card"><div class="r"><span>○ 준비물 챙기기</span><span class="small">사진</span></div></div>
+            <div class="card dim"><div class="r"><span>🔒 미션 더 추가하기</span></div><div class="small">구독하면 더 할 수 있어요</div></div>
+            <div class="grow"></div>
+            <div class="btn">선택</div>
+          </div>
+        </div>
+        <p class="goto">자물쇠 줄을 누르면 <b>P7 구독 안내</b> / 선택하면 → <b>O8</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag onb">O8</span> 첫 미션 같이 하기 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>‹ 양치하기</span><span>00:15</span></div>
+          <div class="body">
+            <div class="note" style="text-align:center">엄마 아빠랑 같이 해봐요!</div>
+            <div class="ph video">파란 펭귄 영상<br>(두리번)</div>
+            <div class="ph grow">카메라 화면</div>
+            <div class="bar"><i></i></div>
+            <div class="btn">● 시작</div>
+            <div class="btn off">✔ 제출</div>
+          </div>
+        </div>
+        <p class="goto">C3 촬영 화면과 같고 위에 안내 한 줄만 더해요 → <b>O9</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag onb">O9</span> 1단계 클리어 <span class="badge">필수</span></figcaption>
+        <div class="phone"><div class="body center">
+          <div class="sparkle">* 반짝 *</div>
+          <div class="ph round" style="width:96px">파란 펭귄<br>(환호)</div>
+          <div class="title">잘했어! 1단계 클리어</div>
+          <div class="card" style="width:100%;text-align:center"><div class="title">+10 코인</div><div class="small">코인이 위로 날아가요</div></div>
+          <div class="path" style="flex:none"><div class="p c"><div class="node done">1</div><span class="small">→</span><div class="node now">2</div></div></div>
+          <div class="small">캐릭터가 2단계로 올라가요</div>
+          <div class="grow"></div>
+          <div class="note" style="width:100%;text-align:center">“이제부터는 혼자서!”</div>
+        </div></div>
+        <p class="goto">C4 기쁨 + C5 코인과 같은 연출 → <b>C1 홈</b></p>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- ================= 아이 영역 ================= -->
+  <section id="child">
+    <div class="sec-head">
+      <h2><span class="tag child">C</span> 아이 영역 (홈 / 상점)</h2>
+      <p class="lead" style="margin:0">글씨는 최소로, 그림과 큰 버튼 중심입니다. 인증하면 바로 클리어되고 코인을 받습니다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag child">C1</span> 홈 (길) <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>펭귄 모험</span><span class="coin"><i class="ci"></i>300</span></div>
+          <div class="body" style="gap:4px">
+            <div class="title">1장 눈꽃 마을</div>
+            <div class="small">공주님 성까지 77칸 남았어요!</div>
+            <div class="path">
+              <div class="p r"><div class="node">15</div></div>
+              <div class="p l"><div class="node">14</div></div>
+              <div class="p r"><div class="ph ch">펭귄</div><div class="node now">13</div></div>
+              <div class="p l"><div class="node done">12</div></div>
+              <div class="p r"><div class="node done">11</div></div>
+              <div class="p c"><div class="node done">10</div></div>
+            </div>
+            <div class="card"><div class="small">🎁 다음 선물까지 코인 N 더 모으면 돼요</div></div>
+          </div>
+          <div class="tabs"><div class="on"><i></i>홈</div><div><i></i>상점</div><div><i></i>부모</div></div>
+        </div>
+        <div class="legend-mini">
+          <span><span class="node done">1</span> 완료</span>
+          <span><span class="node now">13</span> 지금 (캐릭터)</span>
+          <span><span class="node">15</span> 잠김</span>
+          <span><span class="node rest">☾</span> 내일 만나자</span>
+        </div>
+        <p class="goto">지금 단계를 누르면 → <b>C2</b> / 상점 탭 → <b>C9</b> / 부모 탭 → <b>P1</b><br>길은 아래에서 위로 올라가요. 위로 스크롤하면 100단계까지 있어요.</p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag child">C2</span> 단계 팝업 (그날의 미션) <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="body" style="padding-bottom:0">
+            <div class="dimbg" style="height:78px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px">길 화면이 어둡게 보임</div>
+            <div class="sheet">
+              <div class="title">13단계 오늘의 미션</div>
+              <div class="card"><div class="r"><span>양치하기</span><span class="small">영상</span></div><div class="btn sm">하러 가기</div></div>
+              <div class="card"><div class="r"><span>손씻기</span><span>✓ 완료</span></div></div>
+              <div class="card"><div class="r"><span>책읽기</span><span class="small" style="color:var(--warn)">다시 해보자</span></div><div class="btn sm">하러 가기</div></div>
+              <div class="small" style="text-align:center;margin-top:2px">오늘 1 / 3 완료</div>
+            </div>
+          </div>
+        </div>
+        <p class="goto">미션 카드 상태 3가지: 아직 / 완료 / 다시 해보자<br>[하러 가기] → <b>C3</b> / 잠긴 단계를 누르면 “아직이야” 하고 흔들려요</p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag child">C3</span> 미션 촬영 (영상) <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>‹ 양치하기</span><span>00:12</span></div>
+          <div class="body">
+            <div class="ph video">파란 펭귄 영상<br>(두리번거리며 쳐다봄)</div>
+            <div class="ph grow">카메라 화면<br>● 녹화 중</div>
+            <div class="bar"><i></i></div>
+            <div class="small" style="text-align:center">남은 시간</div>
+            <div class="btn off">✔ 제출 (다 찍으면 켜짐)</div>
+          </div>
+        </div>
+        <p class="goto">부모가 정한 길이(5~30초)가 지나면 자동으로 끝나요 → <b>C4</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag child">C3</span> 미션 촬영 (사진) <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>‹ 비타민 먹기</span><span></span></div>
+          <div class="body">
+            <div class="ph video">파란 펭귄 영상<br>(두리번거리며 쳐다봄)</div>
+            <div class="ph grow">카메라 화면</div>
+            <div class="btn">● 찍기</div>
+            <div class="row"><div class="btn ghost">다시 찍기</div><div class="btn off">✔ 제출</div></div>
+            <div class="small" style="text-align:center">찍은 뒤 미리보기에서 제출해요</div>
+          </div>
+        </div>
+        <p class="goto">사진 미션: 비타민 먹기, 책읽기, 준비물 챙기기 → <b>C4</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag child">C4</span> 클리어 기쁨 <span class="badge">필수</span></figcaption>
+        <div class="phone"><div class="body center mid">
+          <div class="sparkle">* 반짝 반짝 *</div>
+          <div class="ph round" style="width:120px">파란 펭귄<br>(환호)</div>
+          <div class="title" style="font-size:16px;margin-top:8px">잘했어!</div>
+          <div class="small">효과음이 나와요</div>
+        </div></div>
+        <p class="goto">부모 확인을 기다리지 않고 바로 나와요 → <b>C5</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag child">C5</span> 코인 획득 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span></span><span class="coin"><i class="ci"></i>310</span></div>
+          <div class="body center mid">
+            <div class="title" style="font-size:20px">+10</div>
+            <div class="ph" style="width:100%;height:70px">코인 5개가 위로 날아가<br>오른쪽 위 코인 칩에 쏙 들어감</div>
+            <div class="grow"></div>
+            <div class="btn" style="width:100%">확인</div>
+          </div>
+        </div>
+        <p class="goto">효과음과 함께 숫자가 올라가요 → <b>C6</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag child">C6</span> 단계 오르기 / 내일 만나자 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>펭귄 모험</span><span class="coin"><i class="ci"></i>310</span></div>
+          <div class="body" style="gap:4px">
+            <div class="path">
+              <div class="p r"><div class="node">15</div></div>
+              <div class="p l"><div class="node">14</div></div>
+              <div class="p c"><div class="small">↑ 오늘 다 깨면 걸어 올라가요</div></div>
+              <div class="p r"><div class="ph ch">펭귄 (쉼)</div><div class="node rest">☾</div></div>
+              <div class="p l"><div class="node done">12</div></div>
+            </div>
+            <div class="note" style="text-align:center">내일 만나자! (자정에 다음 단계가 열려요)</div>
+          </div>
+          <div class="tabs"><div class="on"><i></i>홈</div><div><i></i>상점</div><div><i></i>부모</div></div>
+        </div>
+        <p class="goto">미션이 남았으면 → <b>C2</b>로 돌아가요 / 장의 마지막이면 → <b>C7</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag child">C7</span> 장 전환 <span class="badge later">나중</span></figcaption>
+        <div class="phone later"><div class="body center mid">
+          <div class="small">~ 새로운 곳이야! ~</div>
+          <div class="ph" style="width:100%;height:120px">배경이 크게 바뀜<br>(숲 → 바다 …)</div>
+          <div class="ph round" style="width:70px">펭귄<br>(신남)</div>
+          <div class="title">2장 (장 이름 미정)</div>
+          <div class="btn" style="width:100%">출발!</div>
+        </div></div>
+        <p class="goto">10단계마다 나와요. 시연은 1단계만이라 이번에는 안 만들어요.</p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag child">C8</span> 다시 해보자 (실패 안내) <span class="badge">필수</span></figcaption>
+        <div class="phone"><div class="body center mid">
+          <div class="ph round" style="width:100px">파란 펭귄<br>(응원)</div>
+          <div class="title" style="font-size:15px;margin-top:6px">다시 해보자!</div>
+          <div class="small">한 번 더 찍어볼까?</div>
+          <div class="path" style="flex:none;margin:6px 0"><div class="p c"><div class="node done">2</div><span class="small">→</span><div class="node now">1</div></div></div>
+          <div class="small">한 단계 내려왔어요 · 코인 -10</div>
+          <div class="grow"></div>
+          <div class="row" style="width:100%"><div class="btn">다시 찍기</div><div class="btn ghost">나중에</div></div>
+        </div></div>
+        <p class="goto">슬퍼하지 않고 응원하는 표정이에요. [다시 찍기] → <b>C3</b> / [나중에] → <b>C1</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag child">C9</span> 상점 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>선물 상점</span><span class="coin"><i class="ci"></i>10</span></div>
+          <div class="body" style="gap:6px">
+            <div class="card"><div class="r"><div><div class="small">하늘이의 코인</div><div class="title" style="font-size:16px"><i class="ci"></i>10</div></div><div class="ph round" style="width:44px">펭귄</div></div></div>
+            <div class="title">내가 고를 수 있는 선물</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <div class="card dim"><div class="ph" style="height:34px">그림</div><div>가족 영화 보기</div><div class="small"><i class="ci"></i>50 · 40 더 필요</div></div>
+              <div class="card dim"><div class="ph" style="height:34px">그림</div><div>저녁 메뉴 고르기</div><div class="small"><i class="ci"></i>100</div></div>
+              <div class="card dim"><div class="ph" style="height:34px">그림</div><div>특별 놀이 20분</div><div class="small"><i class="ci"></i>150</div></div>
+              <div class="card dim"><div class="ph" style="height:34px">그림</div><div>주말 공원 고르기</div><div class="small"><i class="ci"></i>200</div></div>
+            </div>
+            <div class="small" style="text-align:center">🔒 선물은 부모님이 확인한 뒤 받을 수 있어요</div>
+          </div>
+          <div class="tabs"><div><i></i>홈</div><div class="on"><i></i>상점</div><div><i></i>부모</div></div>
+        </div>
+        <p class="goto">선물을 누르면 → <b>C10</b>. 선물은 4개이고 이름과 가격은 부모가 바꿀 수 있어요.</p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag child">C10</span> 구매 팝업 3종 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="body" style="background:var(--wire);gap:8px;justify-content:center">
+            <div class="card"><div class="small">(a) 구매 확인</div><div class="title">가족 영화 보기 <i class="ci"></i>50</div><div class="row"><div class="btn ghost sm">취소</div><div class="btn sm">사기</div></div></div>
+            <div class="card"><div class="small">(b) 코인 부족</div><div class="title">코인이 부족합니다</div><div class="small">(펭귄이 응원하는 표정)</div><div class="btn sm">확인</div></div>
+            <div class="card"><div class="small">(c) 구매 완료</div><div class="title">주문했어요!</div><div class="small">부모님이 확인하면 받을 수 있어요</div><div class="btn sm">확인</div></div>
+          </div>
+        </div>
+        <p class="goto">[사기]를 누르면 코인이 바로 빠져요. 시연에서는 (b)만 보여줘요.</p>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- ================= 부모 영역 ================= -->
+  <section id="parent">
+    <div class="sec-head">
+      <h2><span class="tag par">P</span> 부모 영역 (PIN으로 들어감)</h2>
+      <p class="lead" style="margin:0">처리할 일이 맨 위에 있고, 한 건씩 빠르게 넘깁니다. 아이 화면과 분위기를 다르게 해서 “지금은 부모 화면”임이 보여야 합니다.</p>
+    </div>
+    <div class="grid">
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag par">P1</span> PIN 입력 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>‹ 부모님 확인</span><span></span></div>
+          <div class="body">
+            <div class="title" style="text-align:center;margin-top:8px">비밀번호를 입력하세요</div>
+            <div class="dots"><i class="f"></i><i class="f"></i><i></i><i></i></div>
+            <div class="small" style="text-align:center">틀리면 칸이 흔들려요</div>
+            <div class="keypad" data-keypad></div>
+          </div>
+          <div class="tabs"><div><i></i>홈</div><div><i></i>상점</div><div class="on"><i></i>부모</div></div>
+        </div>
+        <p class="goto">부모 탭을 누르면 나와요 → <b>P2</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag par">P2</span> 부모 홈 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>하늘이 부모님</span><span class="mini">아이 화면으로</span></div>
+          <div class="body">
+            <div class="card"><div class="title">❗ 확인할 인증 2건</div><div class="small">양치하기, 비타민 먹기</div><div class="btn sm" style="align-self:flex-end">확인하기</div></div>
+            <div class="card"><div class="title">🎁 구매한 선물 1개</div><div class="small">가족 영화 보기</div><div class="btn sm" style="align-self:flex-end">확인하기</div></div>
+            <div class="row"><div class="card" style="text-align:center;padding:12px 4px">미션 관리</div><div class="card" style="text-align:center;padding:12px 4px">선물 관리</div></div>
+            <div class="card" style="text-align:center">구독 안내</div>
+          </div>
+          <div class="tabs"><div><i></i>홈</div><div><i></i>상점</div><div class="on"><i></i>부모</div></div>
+        </div>
+        <p class="goto">할 일이 없으면 “확인할 인증이 없어요”가 나와요<br>→ <b>P3 / P4 / P5 / P6 / P7</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag par">P3</span> 인증 확인 (한 건씩) <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>‹ 인증 확인</span><span>1 / 2</span></div>
+          <div class="body">
+            <div class="row between"><span class="title">양치하기</span><span class="small">오늘 08:10</span></div>
+            <div class="ph grow">영상 재생<br>▶ 0:18<br>(사진 미션은 사진이 들어가요)</div>
+            <div class="row"><div class="btn ghost">실패</div><div class="btn">성공</div></div>
+            <div class="small" style="text-align:center">실패하면 캐릭터가 한 단계 내려가고<br>코인 10이 빠져요</div>
+          </div>
+        </div>
+        <p class="goto">[실패]는 “정말 실패로 할까요?” 확인을 한 번 거쳐요. 처리하면 다음 건으로 넘어가요. 실패 → 아이 화면 <b>C8</b></p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag par">P4</span> 구매한 선물 확인 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>‹ 구매한 선물</span><span></span></div>
+          <div class="body">
+            <div class="card"><div class="r"><div class="ph" style="width:34px;height:34px">그림</div><div style="flex:1"><div class="title">가족 영화 보기</div><div class="small">하늘이가 오늘 샀어요</div></div></div><div class="btn sm" style="align-self:flex-end">줬어요</div></div>
+            <div class="small" style="text-align:center">“줬어요”를 누르면 목록에서 사라져요</div>
+          </div>
+        </div>
+        <p class="goto">선물을 실제로 준 뒤에 눌러요</p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag par">P5</span> 미션 관리 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>‹ 미션 관리</span><span></span></div>
+          <div class="body">
+            <div class="card"><div class="r"><span class="title">양치하기</span><span class="small">영상</span></div><div class="small">영상 길이 <span class="input s">15</span> 초</div><div class="btn ghost sm" style="align-self:flex-start">미션 바꾸기</div></div>
+            <div class="card dim"><div class="title">🔒 미션 더 추가하기</div><div class="small">구독하면 할 수 있어요</div></div>
+            <div class="note">마지막 1개는 삭제할 수 없고 바꾸기만 돼요.<br>구독하면 목록이 늘고 각 줄에 [삭제]가 생겨요.</div>
+            <div class="grow"></div>
+            <div class="btn">저장</div>
+          </div>
+        </div>
+        <p class="goto">“미션 더 추가하기” → <b>P7</b>. 부모가 새 미션을 직접 쓰는 기능은 나중이에요.</p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag par">P6</span> 선물 관리 <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>‹ 선물 관리</span><span></span></div>
+          <div class="body" style="gap:5px">
+            <div class="card"><div class="r"><span class="small">이름</span><span class="input" style="flex:1;margin-left:8px">가족 영화 보기</span></div><div class="r"><span class="small">가격</span><span class="input s">50</span></div></div>
+            <div class="card"><div class="r"><span class="small">이름</span><span class="input" style="flex:1;margin-left:8px">저녁 메뉴 고르기</span></div><div class="r"><span class="small">가격</span><span class="input s">100</span></div></div>
+            <div class="card"><div class="r"><span class="small">이름</span><span class="input" style="flex:1;margin-left:8px">특별 놀이 20분</span></div><div class="r"><span class="small">가격</span><span class="input s">150</span></div></div>
+            <div class="card"><div class="r"><span class="small">이름</span><span class="input" style="flex:1;margin-left:8px">주말 공원 고르기</span></div><div class="r"><span class="small">가격</span><span class="input s">200</span></div></div>
+            <div class="grow"></div>
+            <div class="btn">저장</div>
+          </div>
+        </div>
+        <p class="goto">선물은 4개로 고정이고 이름과 가격만 바꿔요 (가격은 10 이상)</p>
+      </figure>
+
+      <figure class="screen">
+        <figcaption class="cap"><span class="tag par">P7</span> 구독 안내 (가짜 결제) <span class="badge">필수</span></figcaption>
+        <div class="phone">
+          <div class="hd"><span>‹ 구독 안내</span><span></span></div>
+          <div class="body center">
+            <div class="ph" style="width:100%;height:92px">파란 펭귄 + 별</div>
+            <div class="title" style="font-size:14px">더 많은 모험을 떠나요!</div>
+            <div class="card" style="width:100%"><div>✓ 미션 더 추가하기</div><div>✓ 21단계 이후 계속 가기</div></div>
+            <div class="title">월 ____ 원 <span class="small">(가격 미정)</span></div>
+            <div class="grow"></div>
+            <div class="btn" style="width:100%">구독하기</div>
+            <div class="small">이번 버전은 시연용 화면이에요</div>
+          </div>
+        </div>
+        <p class="goto">누르면 실제 결제 없이 “구독이 시작됐어요”가 나오고 제한이 풀려요. O7 자물쇠, P5에서 들어와요.</p>
+      </figure>
+
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* 숫자 키패드를 한 번만 정의하고 data-keypad 칸마다 채운다 */
+(function () {
+  var keys = ["1","2","3","4","5","6","7","8","9","","0","⌫"];
+  document.querySelectorAll("[data-keypad]").forEach(function (el) {
+    keys.forEach(function (k) {
+      var d = document.createElement("div");
+      d.textContent = k;
+      if (k === "") d.className = "blank";
+      el.appendChild(d);
+    });
+  });
+})();
+</script>
+</body>
+</html>
