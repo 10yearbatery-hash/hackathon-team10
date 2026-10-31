@@ -1,0 +1,19 @@
+{
+  "_readme": [
+    "Phase별 수용 기준. 모든 기준은 passes=false로 시작한다 (기본 실패).",
+    "빌더는 이번 세션에서 직접 관찰한 증거(실행한 명령의 결과, Read로 열어 본 스크린샷)가 있을 때만 passes를 true로 바꾸고 evidence에 근거를 적는다.",
+    "id와 text는 바꾸지 않는다. 기준을 지우거나 추가하지 않는다. 기준이 잘못됐다고 판단되면 notes에 이유를 적는다.",
+    "사람만 풀 수 있는 문제로 막히면 해당 phase의 blocked에 이유를 문자열로 적는다. 풀리면 null로 되돌린다.",
+    "하네스(harness/run-phase.ps1)는 이 파일을 읽어 phase 완료 여부를 판단한다. JSON 문법을 깨뜨리지 않는다."
+  ],
+  "phases": [
+    {
+      "id": 1,
+      "name": "(Phase 이름)",
+      "blocked": null,
+      "criteria": [
+        { "id": "1.1", "text": "(검증 가능한 완료 기준)", "passes": false, "evidence": "", "notes": "" }
+      ]
+    }
+  ]
+}

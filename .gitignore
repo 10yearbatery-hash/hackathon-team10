@@ -1,0 +1,33 @@
+# dependencies and build output
+node_modules/
+dist/
+dev-dist/
+coverage/
+*.tsbuildinfo
+
+# playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# evidence and review scratch (regenerated every run)
+e2e/screenshots/
+e2e/_review/
+
+# harness runtime files
+harness/logs/
+harness/state/
+
+# local and secrets
+.env
+.env.*
+*.local
+.claude/settings.local.json
+CLAUDE.local.md
+
+# os and editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
