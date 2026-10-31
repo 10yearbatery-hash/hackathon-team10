@@ -41,8 +41,10 @@ export function takePhoto(video: HTMLVideoElement): Promise<Blob> {
   return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("photo"))), "image/jpeg", 0.7));
 }
 
+/** mp4(H.264)를 먼저 고른다. 아이폰 Safari와 최신 Chrome이 녹화할 수 있고, 거의 모든 브라우저가 재생한다.
+ *  webm은 Safari에서 녹화는 돼도 재생이 불안정해 뒤로 둔다 */
 function pickMime(): string {
-  const options = ["video/webm;codecs=vp8", "video/webm", "video/mp4"];
+  const options = ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp8", "video/webm"];
   return options.find((t) => typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(t)) ?? "";
 }
 
@@ -54,7 +56,13 @@ export function recordVideo(stream: MediaStream, seconds: number): { done: Promi
   let cancelled = false;
   recorder.ondataavailable = (e) => e.data.size > 0 && chunks.push(e.data);
   const done = new Promise<Blob>((resolve, reject) => {
-    recorder.onstop = () => (cancelled ? reject(new Error("cancelled")) : resolve(new Blob(chunks, { type: recorder.mimeType || "video/webm" })));
+    recorder.onstop = () => {
+      if (cancelled) return reject(new Error("cancelled"));
+      const blob = new Blob(chunks, { type: (recorder.mimeType || mimeType || "video/webm").split(";")[0] });
+      // 카메라가 중간에 끊기면 빈 파일이 나온다. 그대로 제출하면 부모 확인에서 검은 화면만 보인다
+      if (blob.size === 0) return reject(new Error("empty"));
+      resolve(blob);
+    };
   });
   recorder.start(500);
   const timer = window.setTimeout(() => recorder.state !== "inactive" && recorder.stop(), seconds * 1000);

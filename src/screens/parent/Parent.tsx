@@ -188,16 +188,21 @@ export function ParentHome() {
 function ProofMedia({ id, kind }: { id: string; kind: "video" | "photo" }) {
   const [url, setUrl] = useState<string | null>(null);
   const [missing, setMissing] = useState(false);
+  const [info, setInfo] = useState("");
+  const [broken, setBroken] = useState(false);
 
   useEffect(() => {
     let alive = true;
     let made = "";
     setUrl(null);
     setMissing(false);
+    setBroken(false);
     loadMedia(id)
       .then((blob) => {
         if (!alive) return;
         if (!blob) return setMissing(true);
+        setInfo(`${blob.type || "형식 모름"}, ${Math.round(blob.size / 1024)}KB`);
+        if (blob.size === 0) return setBroken(true);
         made = URL.createObjectURL(blob);
         setUrl(made);
       })
@@ -209,9 +214,32 @@ function ProofMedia({ id, kind }: { id: string; kind: "video" | "photo" }) {
   }, [id]);
 
   if (missing) return <div className="media-box empty">사진·영상을 불러올 수 없어요</div>;
+  if (broken)
+    return (
+      <div className="media-box empty" data-testid="proof-broken">
+        이 브라우저에서 재생할 수 없는 영상이에요 ({info})
+      </div>
+    );
   if (!url) return <div className="media-box empty">불러오는 중...</div>;
   return kind === "video" ? (
-    <video className="media-box" src={url} controls autoPlay muted loop playsInline data-testid="proof-media" />
+    <video
+      className="media-box"
+      src={url}
+      controls
+      autoPlay
+      muted
+      loop
+      playsInline
+      onError={() => setBroken(true)}
+      onLoadedMetadata={(e) => {
+        // 브라우저 녹화(webm)는 길이 정보가 없어 재생 막대가 멈춘다. 끝까지 한 번 찾아가 길이를 알아낸 뒤 처음으로 돌린다
+        const v = e.currentTarget;
+        if (v.duration !== Infinity) return;
+        v.currentTime = 1e101;
+        v.addEventListener("durationchange", () => (v.currentTime = 0), { once: true });
+      }}
+      data-testid="proof-media"
+    />
   ) : (
     <img className="media-box" src={url} alt="인증 사진" data-testid="proof-media" />
   );

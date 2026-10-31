@@ -92,7 +92,14 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
         setBlob(b);
         setPhase("review");
       })
-      .catch(() => undefined);
+      .catch((e: Error) => {
+        // 빈 녹화는 다시 찍게 한다. 취소는 취소한 쪽에서 화면을 바꾼다
+        if (e.message !== "empty") return;
+        recRef.current = null;
+        sfx.soft();
+        setLeft(seconds);
+        setPhase("ready");
+      });
   }, [def.kind, seconds]);
 
   function retake() {
