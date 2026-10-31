@@ -133,11 +133,8 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
     if (!blob || phase !== "review") return;
     setPhase("saving");
     const id = makeId("proof");
-    try {
-      await saveMedia(id, blob);
-    } catch {
-      // 저장 공간이 모자라도 아이의 진행은 막지 않는다. 부모 확인 화면에서 "영상을 불러올 수 없어요"로 보인다
-    }
+    // 메모리, 폰, 서버에 나눠 저장한다. 폰 저장이 실패해도 아이의 진행은 막지 않는다 (app/sync.ts)
+    await saveMedia(id, blob).catch(() => undefined);
     const before = getState();
     const result = submitProof(before, { id, missionId, now: Date.now(), practice: first });
     if (!result.proof) {

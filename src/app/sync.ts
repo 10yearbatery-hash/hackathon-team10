@@ -28,6 +28,29 @@ const listeners = new Set<() => void>();
 let timer: ReturnType<typeof setTimeout> | null = null;
 let started = false;
 
+/** 앱을 연 직후 저장된 로그인을 되살리는 동안 사진·영상 요청을 잠깐 기다리게 한다 */
+let authKnown!: () => void;
+const authReady = new Promise<void>((resolve) => (authKnown = resolve));
+if (!cloudEnabled) authKnown();
+setTimeout(() => authKnown(), 4000);
+
+/** 이번에 찍은 사진·영상. 폰 저장이 실패해도 앱을 끄기 전까지는 부모 확인에서 보인다 */
+const memo = new Map<string, Blob>();
+
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** 실패하면 조금 기다렸다 다시 한다 */
+async function retry<T>(times: number, run: () => Promise<T>): Promise<T> {
+  for (let i = 1; ; i++) {
+    try {
+      return await run();
+    } catch (e) {
+      if (i >= times) throw e;
+      await wait(700 * i);
+    }
+  }
+}
+
 function set(patch: Partial<SyncView>) {
   view = { ...view, ...patch };
   listeners.forEach((l) => l());
@@ -55,7 +78,13 @@ export function startSync(): void {
     timer = setTimeout(() => void pushNow(), 800);
   });
 
+  // 인터넷이 다시 연결되면 못 올린 사진·영상을 올린다
+  window.addEventListener("online", () => {
+    if (view.user) void uploadMissingMedia(view.user.id).catch(() => undefined);
+  });
+
   onAuthChange((user) => {
+    authKnown();
     if (user?.id === view.user?.id) return;
     set({ user, status: user ? "syncing" : "out", savedAt: null });
     if (user) void reconcile(user);
@@ -94,28 +123,53 @@ export async function pushNow(): Promise<void> {
 }
 
 async function uploadMissingMedia(userId: string) {
-  const [local, remote] = await Promise.all([listMediaKeys(), listMedia(userId)]);
-  for (const id of local) {
+  const [local, remote] = await Promise.all([listMediaKeys().catch(() => [] as string[]), listMedia(userId)]);
+  const ids = new Set([...local, ...memo.keys()]);
+  for (const id of ids) {
     if (remote.has(id)) continue;
-    const blob = await getMedia(id);
-    if (blob) await uploadMedia(userId, id, blob);
+    const blob = memo.get(id) ?? (await getMedia(id).catch(() => undefined));
+    if (blob) await retry(3, () => uploadMedia(userId, id, blob));
   }
 }
 
-/** 인증 사진·영상을 폰에 저장하고, 로그인했으면 서버에도 올린다 */
+/** 폰 저장소를 읽다 실패해도 멈추지 않는다 */
+const readLocal = (id: string) => getMedia(id).catch(() => undefined);
+
+/**
+ * 인증 사진·영상을 저장한다. 절대 실패로 끝나지 않는다.
+ * 메모리에 먼저 두고, 폰 저장(두 번까지)과 서버 업로드(로그인했으면, 세 번까지)를 한다.
+ */
 export async function saveMedia(id: string, blob: Blob): Promise<void> {
-  await putMedia(id, blob);
+  memo.set(id, blob);
+  try {
+    await retry(2, () => putMedia(id, blob));
+  } catch {
+    // 폰 저장 공간이 모자라거나 사생활 보호 모드면 메모리와 서버에만 남는다
+  }
   const user = view.user;
-  if (user) void uploadMedia(user.id, id, blob).catch(() => set({ status: "error" }));
+  if (user) void retry(3, () => uploadMedia(user.id, id, blob)).catch(() => set({ status: "error" }));
 }
 
-/** 폰에 없으면 서버에서 받아 폰에 넣어 둔다 (다른 기기에서 찍은 것) */
+/** 메모리 → 폰 → 서버(다른 기기에서 찍은 것) 순서로 찾는다. 서버에서 받은 건 폰에 넣어 둔다 */
 export async function loadMedia(id: string): Promise<Blob | undefined> {
-  const local = await getMedia(id);
-  if (local || !view.user) return local;
-  const remote = await downloadMedia(view.user.id, id);
-  if (remote) await putMedia(id, remote);
-  return remote;
+  const mem = memo.get(id);
+  if (mem) return mem;
+  const local = await readLocal(id);
+  if (local) return local;
+  await authReady;
+  const user = view.user;
+  if (!user) return undefined;
+  // 다른 폰이 아직 올리는 중일 수 있어 몇 번 더 기다려 본다
+  for (let i = 0; i < 4; i++) {
+    const remote = await downloadMedia(user.id, id).catch(() => undefined);
+    if (remote) {
+      memo.set(id, remote);
+      void putMedia(id, remote).catch(() => undefined);
+      return remote;
+    }
+    await wait(1500);
+  }
+  return undefined;
 }
 
 export function login(email: string, password: string): Promise<AuthResult> {

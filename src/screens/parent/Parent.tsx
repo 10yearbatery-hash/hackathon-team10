@@ -190,6 +190,8 @@ function ProofMedia({ id, kind }: { id: string; kind: "video" | "photo" }) {
   const [missing, setMissing] = useState(false);
   const [info, setInfo] = useState("");
   const [broken, setBroken] = useState(false);
+  const [tries, setTries] = useState(0);
+  const sync = useSync();
 
   useEffect(() => {
     let alive = true;
@@ -211,9 +213,22 @@ function ProofMedia({ id, kind }: { id: string; kind: "video" | "photo" }) {
       alive = false;
       if (made) URL.revokeObjectURL(made);
     };
-  }, [id]);
+  }, [id, tries]);
 
-  if (missing) return <div className="media-box empty">사진·영상을 불러올 수 없어요</div>;
+  if (missing)
+    return (
+      <div className="media-box empty media-missing" data-testid="proof-missing">
+        <b>이 폰에는 사진·영상이 없어요</b>
+        <small>
+          {sync.enabled && !sync.user
+            ? "다른 폰에서 찍었다면 두 폰 모두 같은 계정으로 로그인하면 볼 수 있어요."
+            : "다른 폰에서 찍었다면 그 폰이 인터넷에 연결되어 올리고 나면 보여요."}
+        </small>
+        <button className="btn btn-ghost btn-sm" onClick={() => setTries((t) => t + 1)} data-testid="proof-retry">
+          다시 불러오기
+        </button>
+      </div>
+    );
   if (broken)
     return (
       <div className="media-box empty" data-testid="proof-broken">

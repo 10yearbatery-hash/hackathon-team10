@@ -77,14 +77,29 @@ export function recordVideo(stream: MediaStream, seconds: number): { done: Promi
   const chunks: Blob[] = [];
   let cancelled = false;
   recorder.ondataavailable = (e) => e.data.size > 0 && chunks.push(e.data);
+  let finished = false;
+  let watchdog = 0;
   const done = new Promise<Blob>((resolve, reject) => {
-    recorder.onstop = () => {
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      window.clearTimeout(watchdog);
       if (cancelled) return reject(new Error("cancelled"));
       const blob = new Blob(chunks, { type: (recorder.mimeType || mimeType || "video/webm").split(";")[0] });
       // 카메라가 중간에 끊기면 빈 파일이 나온다. 그대로 제출하면 부모 확인에서 검은 화면만 보인다
       if (blob.size === 0) return reject(new Error("empty"));
       resolve(blob);
     };
+    recorder.onstop = finish;
+    // 브라우저가 멈춤 신호를 끝내 안 주는 경우가 있다. 정한 시간보다 3초 넘게 걸리면 찍힌 만큼으로 마무리한다
+    watchdog = window.setTimeout(() => {
+      try {
+        if (recorder.state !== "inactive") recorder.stop();
+      } catch {
+        // 이미 멈춘 녹화기
+      }
+      window.setTimeout(finish, 800);
+    }, seconds * 1000 + 3000);
   });
   recorder.start(500);
   const timer = window.setTimeout(() => recorder.state !== "inactive" && recorder.stop(), seconds * 1000);
