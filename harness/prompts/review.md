@@ -5,7 +5,7 @@
 ## 1. 맥락
 
 - `plan/plan.md`의 Phase N, `plan/acceptance.json`의 Phase N 기준
-- `docs/prd.md` (특히 8장 규칙, 10장 디자인 원칙과 피할 것), `docs/서비스기획_유저플로우.md` 6장 레이아웃
+- `docs/prd.md` (특히 8장 규칙, 10장 디자인 원칙과 피할 것), `docs/서비스기획.md`(규칙), `docs/유저저니.md` 6장 레이아웃
 - `progress/handoff.md`, `git log --oneline -20`, 이번 Phase 변경분 diff
 
 ## 2. 확인
