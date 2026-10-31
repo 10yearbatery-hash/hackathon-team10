@@ -17,7 +17,7 @@
           └─ 효과음 → Web Audio (음원 파일 없음)
 ```
 
-서버가 없다 (ADR-003). 부모 영역은 같은 폰에서 PIN으로 나눈다 (ADR-007).
+폰 안 저장이 기본이다 (ADR-003). 부모가 이메일로 로그인하면 같은 내용을 Supabase에도 올린다 (ADR-016, `app/sync.ts`, `platform/cloud.ts`). 연결 값(`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`)이 없으면 서버 기능은 꺼진다. 부모 영역은 같은 폰에서 PIN으로 나눈다 (ADR-007).
 
 ## 2. 기술 스택
 
@@ -45,7 +45,8 @@ src/
     rules.ts                 # 규칙 계산과 상태 변경 (R-xx)
     rules.test.ts
   platform/
-    storage.ts               # localStorage + IndexedDB, 처음 상태로 되돌리기
+    storage.ts               # localStorage + IndexedDB, 처음 상태로 되돌리기, 동기화 기록
+    cloud.ts                 # Supabase: 로그인, 상태 JSON(family_state), 사진·영상(proofs 버킷)
     camera.ts                # 카메라 켜기, 사진 찍기, 정해진 길이 녹화
     sound.ts                 # 효과음
   app/

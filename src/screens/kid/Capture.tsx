@@ -6,7 +6,7 @@ import { go } from "../../app/router";
 import { commit, getState, handoff, makeId } from "../../app/store";
 import { openCamera, recordVideo, stopCamera, takePhoto, type CameraError } from "../../platform/camera";
 import { sfx } from "../../platform/sound";
-import { putMedia } from "../../platform/storage";
+import { saveMedia } from "../../app/sync";
 import { Icon } from "../../ui/icons";
 
 type Phase = "ready" | "recording" | "review" | "saving";
@@ -107,7 +107,7 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
     setPhase("saving");
     const id = makeId("proof");
     try {
-      await putMedia(id, blob);
+      await saveMedia(id, blob);
     } catch {
       // 저장 공간이 모자라도 아이의 진행은 막지 않는다. 부모 확인 화면에서 "영상을 불러올 수 없어요"로 보인다
     }

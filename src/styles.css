@@ -2086,3 +2086,37 @@ p {
   width: 100%;
   padding: 8px 4px;
 }
+
+/* ---------- P8 계정과 기록 저장 (ADR-016) ---------- */
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.account-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.account-note {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.account-card b {
+  display: block;
+  font-size: 17px;
+  margin: 2px 0 6px;
+  word-break: break-all;
+}
+
+.account-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}

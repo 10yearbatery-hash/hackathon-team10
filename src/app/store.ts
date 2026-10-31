@@ -6,6 +6,7 @@ import { loadState, resetAll, saveState } from "../platform/storage";
 
 let state: AppState = loadState();
 const listeners = new Set<() => void>();
+const commitListeners = new Set<(s: AppState) => void>();
 
 function emit() {
   listeners.forEach((l) => l());
@@ -21,7 +22,21 @@ export function commit(next: AppState): boolean {
   state = next;
   saveState(state);
   emit();
+  commitListeners.forEach((l) => l(state));
   return true;
+}
+
+/** 화면에서 상태를 바꿀 때마다 불린다. 서버 동기화가 쓴다 (app/sync.ts) */
+export function onCommit(l: (s: AppState) => void): () => void {
+  commitListeners.add(l);
+  return () => commitListeners.delete(l);
+}
+
+/** 서버에서 받은 상태로 통째로 바꾼다. onCommit은 부르지 않는다 */
+export function replaceState(next: AppState): void {
+  state = next;
+  saveState(state);
+  emit();
 }
 
 export function update(fn: (s: AppState) => AppState): boolean {

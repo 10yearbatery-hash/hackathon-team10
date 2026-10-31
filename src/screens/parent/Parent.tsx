@@ -5,7 +5,7 @@ import { giftIsValid, giveGift, openPurchases, pendingProofs, reviewProof, saveG
 import { go } from "../../app/router";
 import { handoff, resetApp, update, useAppState } from "../../app/store";
 import { sfx } from "../../platform/sound";
-import { getMedia } from "../../platform/storage";
+import { loadMedia, logout, useSync } from "../../app/sync";
 import { Icon } from "../../ui/icons";
 import { Hero, Modal, nick, PinPad, TabBar, TopBar } from "../../ui/parts";
 import { SecondsStepper } from "../onboarding/Onboarding";
@@ -58,6 +58,7 @@ export function ParentHome() {
   const pending = pendingProofs(state);
   const bought = openPurchases(state);
   const [askReset, setAskReset] = useState(false);
+  const sync = useSync();
 
   return (
     <section className="screen parent" data-testid="screen-parent-home">
@@ -137,6 +138,15 @@ export function ParentHome() {
           <Icon name="right" size={18} />
         </button>
 
+        {sync.enabled && (
+          <button className="menu-wide" onClick={() => go("/parent/account")} data-testid="go-account">
+            <Icon name="parent" size={20} />
+            <b>계정과 기록 저장</b>
+            <small data-testid="account-summary">{sync.user ? sync.user.email : "로그인하면 서버에 저장"}</small>
+            <Icon name="right" size={18} />
+          </button>
+        )}
+
         <button className="reset-link" onClick={() => setAskReset(true)} data-testid="reset">
           시연용: 처음 상태로 되돌리기
         </button>
@@ -145,7 +155,9 @@ export function ParentHome() {
       {askReset && (
         <Modal onClose={() => setAskReset(false)} testId="reset-confirm">
           <h2>처음 상태로 되돌릴까요?</h2>
-          <p className="muted">단계, 코인, 인증 사진·영상, 설정이 모두 지워지고 시작 화면으로 가요.</p>
+          <p className="muted">
+            이 폰의 단계, 코인, 인증 사진·영상, 설정이 모두 지워지고 시작 화면으로 가요.{sync.user && " 로그아웃되고, 계정에 저장된 기록은 남아 있어요."}
+          </p>
           <div className="row gap">
             <button className="btn btn-ghost grow" onClick={() => setAskReset(false)}>
               취소
@@ -153,6 +165,8 @@ export function ParentHome() {
             <button
               className="btn btn-red grow"
               onClick={async () => {
+                // 계정 기록은 지우지 않는다. 로그아웃한 뒤 이 폰만 처음 상태로 돌린다
+                if (sync.user) await logout();
                 await resetApp();
                 handoff.parentOk = false;
                 go("/start", { replace: true });
@@ -180,7 +194,7 @@ function ProofMedia({ id, kind }: { id: string; kind: "video" | "photo" }) {
     let made = "";
     setUrl(null);
     setMissing(false);
-    getMedia(id)
+    loadMedia(id)
       .then((blob) => {
         if (!alive) return;
         if (!blob) return setMissing(true);

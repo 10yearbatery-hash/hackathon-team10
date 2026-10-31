@@ -8,11 +8,12 @@ import Capture from "./screens/kid/Capture";
 import Clear from "./screens/kid/Clear";
 import Home from "./screens/kid/Home";
 import Shop from "./screens/kid/Shop";
+import Account from "./screens/parent/Account";
 import { Splash } from "./ui/Splash";
 import { BoughtGifts, GiftManage, MissionManage, ParentHome, ParentPin, Review, Subscribe } from "./screens/parent/Parent";
 
 const ONBOARDING = ["/start", "/intro", "/descent", "/handoff", "/setup/pin", "/setup/name", "/setup/mission"];
-const PARENT_LOCKED = ["/parent", "/parent/review", "/parent/gifts", "/parent/missions", "/parent/shop"];
+const PARENT_LOCKED = ["/parent", "/parent/review", "/parent/gifts", "/parent/missions", "/parent/shop", "/parent/account"];
 
 function isMission(id: string): id is MissionId {
   return MISSIONS.some((m) => m.id === id);
@@ -75,6 +76,7 @@ function Screen({ path }: { path: string }) {
   if (path === "/parent/gifts") return <BoughtGifts />;
   if (path === "/parent/missions") return <MissionManage />;
   if (path === "/parent/shop") return <GiftManage />;
+  if (path === "/parent/account") return <Account />;
   if (path === "/subscribe") return <Subscribe />;
   return <NotFound />;
 }

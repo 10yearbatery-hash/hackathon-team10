@@ -22,6 +22,7 @@ harness/state/
 # local and secrets
 .env
 .env.*
+!.env.example
 *.local
 .claude/settings.local.json
 CLAUDE.local.md
