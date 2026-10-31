@@ -54,22 +54,22 @@
 
 | 파일 | 만든 방법 | 원본 또는 프롬프트 | 날짜 | 비고 |
 |---|---|---|---|---|
-| `heroine/source/heroine_penguin.png` | 사용자 제공 | 리본, 인사하는 자세 | 2026-10-31 | 채팅 첨부 사본이라 배경이 검정(불투명). 원본에는 투명일 수 있음 |
+| `heroine/source/heroine_penguin.png` | 사용자 제공 | 리본, 인사하는 자세 | 2026-11-01 | 배경이 투명한 원본(1145x1374)으로 교체함. 이전의 검정 배경 사본은 git 기록에 있음 |
 | `heroine/generated/heroine_penguin_sheet1_body.png` | Codex(ChatGPT 이미지 생성) | 기준: `heroine/source/heroine_penguin.png`. 요청문: `prompts/heroine_parts_sheet1_body.txt` | 2026-10-31 | 몸 부품 8개(머리 바탕, 몸통, 날개 2, 발 2, 깃털, 리본)를 연두 배경에 분해한 시트 |
 | `heroine/generated/heroine_penguin_sheet2_face.png` | Codex(ChatGPT 이미지 생성) | 기준: 원본 + 몸 시트. 요청문: `prompts/heroine_parts_sheet2_face.txt` | 2026-10-31 | 얼굴 부품 8개 시트. 요청문에 크기 비율을 적어서 눈 흰자 폭이 머리 폭의 34%(속눈썹 포함)로 나옴. 눈 흰자 안은 비어 있음 |
 | `heroine/cutout/parts/heroine_*.png` (16개) | 위 두 시트에서 연두 배경을 지우고 부품별로 자름 (`tools/cut_parts.py`, 규칙 heroine1, heroine2) | | 2026-10-31 | 몸 8개(head, body, wing_l/r, foot_l/r, tuft, ribbon), 얼굴 8개(eye_white_l/r, pupil_l/r, brow_l/r, beak_top, beak_bottom). 연두색 잔여 0개 |
-| `heroine/cutout/full/heroine_full.png` | 바깥 검정 배경만 지움 (`tools/cutout_full.py`, 허용오차 60, 깎기 1) | | 2026-10-31 | 996x1289. 어두운 바탕과 밝은 바탕 위에서 확인 |
+| `heroine/cutout/full/heroine_full.png` | 투명 원본을 그림 영역에 맞춰 자름 | 기준: `heroine/source/heroine_penguin.png` | 2026-11-01 | 1129x1275. 어두운 바탕과 밝은 바탕 위에서 확인 |
 
 ### villain (흰 여우)
 
 | 파일 | 만든 방법 | 원본 또는 프롬프트 | 날짜 | 비고 |
 |---|---|---|---|---|
-| `villain/source/villain_fox.png` | 사용자 제공 | 보라 망토, 비스듬한 자세. 같은 디자인을 다듬어 다시 받은 두 번째 버전으로 교체함 | 2026-10-31 | 채팅 첨부 사본이라 배경이 검정(불투명). 원본에는 투명일 수 있음. 이전 버전은 커밋 8417e0e에 있음 |
+| `villain/source/villain_fox.png` | 사용자 제공 | 보라 망토, 비스듬한 자세. 같은 디자인을 다듬어 다시 받은 두 번째 버전으로 교체함 | 2026-11-01 | 배경이 투명한 원본(1254x1254)으로 교체함. 첫 버전은 커밋 8417e0e에 있음 |
 | `villain/generated/villain_fox_sheetA_core.png` | Codex(ChatGPT 이미지 생성) | 기준: `villain/source/villain_fox.png`. 요청문: `prompts/villain_parts_sheetA_core.txt` | 2026-10-31 | 핵심 부품 6개(머리 바탕, 귀 2, 몸통, 꼬리, 금색 장식). 머리와 몸통을 정면 대칭으로 다시 그림 |
 | `villain/generated/villain_fox_sheetB_limbs_cape.png` | Codex(ChatGPT 이미지 생성) | 기준: 원본 + 시트 A. 요청문: `prompts/villain_parts_sheetB_limbs_cape.txt` | 2026-10-31 | 팔 2, 다리 2, 망토 5개. 망토에 금색 장식이 이미 붙어 있어 시트 A의 장식과 중복 |
 | `villain/generated/villain_fox_sheetC_face.png` | Codex(ChatGPT 이미지 생성) | 기준: 원본 + 시트 A. 요청문: `prompts/villain_parts_sheetC_face.txt` | 2026-10-31 | 얼굴 부품 8개(눈 흰자 2, 홍채 2, 눈썹 2, 코, 입). Codex가 첫 결과가 목표보다 약 2배 크다고 스스로 점검해 재생성함. 눈 흰자 폭이 머리 폭의 24% |
 | `villain/cutout/parts/villain_*.png` (19개) | 위 세 시트에서 연두 배경을 지우고 부품별로 자름 (`tools/cut_parts.py`, 규칙 villainA, villainB, villainC) | | 2026-10-31 | 핵심 6개(head, ear_l/r, torso, tail, clasp), 팔다리·망토 5개(arm_l/r, leg_l/r, cape), 얼굴 8개(eye_white_l/r, pupil_l/r, brow_l/r, nose, mouth). 홍채 부품 이름은 다른 캐릭터와 같게 pupil로 통일 |
-| `villain/cutout/full/villain_full.png` | 바깥 검정 배경만 지움 (`tools/cutout_full.py`, 허용오차 60, 깎기 1) | | 2026-10-31 | 1110x1204. 어두운 바탕과 밝은 바탕 위에서 확인 |
+| `villain/cutout/full/villain_full.png` | 투명 원본을 그림 영역에 맞춰 자름 | 기준: `villain/source/villain_fox.png` | 2026-11-01 | 1253x1217. 어두운 바탕과 밝은 바탕 위에서 확인 |
 
 ## 도구
 
