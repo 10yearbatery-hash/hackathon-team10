@@ -511,7 +511,7 @@ export function Subscribe() {
         {step === "pay" && (
           <div className="fake-pay" data-testid="fake-pay">
             <p className="eyebrow-p">결제 (시연용)</p>
-            <h2>펭귄 모험 월 구독</h2>
+            <h2>빙하루 월 구독</h2>
             <div className="pay-card">
               <span>카드</span>
               <b>•••• •••• •••• 1234</b>

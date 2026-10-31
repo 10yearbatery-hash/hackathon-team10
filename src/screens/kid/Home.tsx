@@ -94,7 +94,7 @@ export default function Home() {
     <section className="screen kid map-home" data-testid="screen-home">
       <header className="map-head">
         <div className="map-head-top">
-          <span className="app-name">펭귄 모험</span>
+          <span className="app-name">빙하루</span>
           <span className="coin-pill" data-testid="coin-chip">
             <i aria-hidden="true" />
             {wallet.toLocaleString("ko-KR")}

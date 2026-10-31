@@ -140,12 +140,14 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
       </header>
       {first && <p className="together" data-testid="together">엄마 아빠랑 같이 해봐요!</p>}
 
-      <div className="watch-panel">
-        <video src="./media/hero_look.mp4" muted autoPlay loop playsInline aria-label="펭귄이 지켜보고 있어요" />
-        <span className="watch-say">{recording ? "보고 있어!" : def.kind === "video" ? "화면은 잠깐 내려놓고 해봐!" : "미션을 마친 모습을 찍어 줘."}</span>
-      </div>
-
       <div className="cam-panel" data-testid="cam-panel">
+        <div className="watch-panel">
+          {/* 말풍선은 펭귄 얼굴을 가리지 않게 영상 칸 위에 둔다 */}
+          <span className="watch-say">{recording ? "보고 있어!" : def.kind === "video" ? "화면은 잠깐 내려놓고 해봐!" : "미션을 마친 모습을 찍어 줘."}</span>
+          <div className="watch-stage">
+            <video src="./media/hero_look.mp4" muted autoPlay loop playsInline aria-label="펭귄이 지켜보고 있어요" />
+          </div>
+        </div>
         {error ? (
           <div className="cam-error" data-testid="cam-error">
             <Icon name="camera" size={40} />

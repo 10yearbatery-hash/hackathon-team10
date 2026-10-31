@@ -1,0 +1,323 @@
+/* 부모 설정 온보딩 (피그마 V3/O4~O7). 모든 규칙은 .ob 안에서만 적용해 다른 화면에 영향이 없다 */
+.ob {
+  --ob-blue: #0b63f0;
+  --ob-blue-dark: #0848b4;
+  --ob-ink: #26384a;
+  --ob-muted: #5c6f84;
+  --ob-line: #d9e6f3;
+  --ob-soft: #f4f8ff;
+  background: #fff;
+  color: var(--ob-ink);
+}
+
+/* ---------- 위쪽: 진행바 ---------- */
+.ob-head {
+  padding: max(18px, env(safe-area-inset-top)) 24px 4px;
+}
+
+.ob-head .setup-bar {
+  flex-basis: auto;
+  height: 8px;
+  margin: 0;
+  background: #dde8f5;
+  border-radius: 8px;
+}
+
+.ob-head .setup-bar i {
+  background: var(--ob-blue);
+}
+
+.ob-head p {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ob-muted);
+}
+
+/* ---------- 가운데 ---------- */
+.ob-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: 16px 24px 12px;
+  overflow-y: auto;
+  /* 스크롤은 되지만 막대는 보이지 않게 한다 */
+  scrollbar-width: none;
+}
+
+.ob-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* 부모 부르기 화면은 말풍선과 펭귄을 화면 가운데에 둔다 */
+.ob-center {
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+}
+
+/* ---------- 말풍선 ---------- */
+.ob-bubble {
+  position: relative;
+  align-self: stretch;
+  padding: 16px 18px;
+  background: #fff;
+  border: 2px solid var(--ob-line);
+  border-radius: 20px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.5;
+  white-space: pre-line;
+  color: var(--ob-ink);
+}
+
+.ob-bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  background: #fff;
+  border-right: 2px solid var(--ob-line);
+  border-bottom: 2px solid var(--ob-line);
+  transform: rotate(45deg);
+}
+
+/* ---------- 펭귄 + 바닥 그림자 ---------- */
+.ob-hero {
+  position: relative;
+  align-self: center;
+  flex: none;
+  display: grid;
+  place-items: center;
+  margin-top: 6px;
+}
+
+.ob-hero::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 150%;
+  height: 22%;
+  min-height: 12px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #e7f0fb;
+}
+
+.ob-hero img {
+  position: relative;
+  width: auto;
+  display: block;
+  animation: ob-bob 2.6s ease-in-out infinite;
+}
+
+@keyframes ob-bob {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ob-hero img {
+    animation: none;
+  }
+}
+
+/* ---------- 아래 고정 버튼 ---------- */
+.ob .bottom-cta {
+  margin-top: 0;
+  padding: 12px 24px max(20px, env(safe-area-inset-bottom));
+  background: #fff;
+  border-top: 1px solid #e3ebf5;
+}
+
+.ob .bottom-cta .btn {
+  width: 100%;
+  min-height: 54px;
+  font-size: 18px;
+  border-radius: 16px;
+}
+
+/* 피그마의 진한 파란 입체 버튼 */
+.ob .btn-blue {
+  background: var(--ob-blue);
+  box-shadow: 0 4px 0 var(--ob-blue-dark);
+}
+
+.ob .btn-blue:active:not(:disabled) {
+  box-shadow: 0 1px 0 var(--ob-blue-dark);
+}
+
+/* ---------- 이름 입력 ---------- */
+.ob-label {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ob .field {
+  margin-top: 0;
+  min-height: 54px;
+  background: var(--ob-soft);
+  border: 2px solid var(--ob-line);
+  border-radius: 16px;
+  box-shadow: 0 3px 0 var(--ob-line);
+  color: var(--ob-ink);
+}
+
+.ob .field:focus {
+  border-color: var(--ob-blue);
+  box-shadow: 0 0 0 3px rgba(11, 99, 240, 0.15);
+}
+
+.ob .hint,
+.parent.ob .hint {
+  margin: 2px 2px 0;
+  font-size: 13px;
+  color: var(--ob-muted);
+}
+
+/* ---------- PIN 키패드 ---------- */
+.ob .error {
+  min-height: 20px;
+  margin: -4px 0 -6px;
+}
+
+.ob .pinpad {
+  margin-top: 0;
+  gap: 18px;
+  align-self: stretch;
+}
+
+.ob .pin-dots {
+  gap: 24px;
+}
+
+.ob .pin-dots span {
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--ob-blue);
+}
+
+.ob .pin-dots span.on {
+  background: var(--ob-blue);
+  border-color: var(--ob-blue);
+}
+
+.ob .keys {
+  width: 100%;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.ob .key {
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--ob-line);
+  border-radius: 14px;
+  background: var(--ob-soft);
+  color: var(--ob-ink);
+  box-shadow: 0 3px 0 var(--ob-line);
+}
+
+.ob .key:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ob-line);
+}
+
+/* ---------- 미션 고르기 ---------- */
+.ob-mission {
+  gap: 10px;
+}
+
+.ob-mission .ob-hero {
+  margin-top: 2px;
+}
+
+.ob .mission-pick {
+  flex: none;
+  gap: 10px;
+  overflow: visible;
+  padding-bottom: 6px;
+}
+
+.ob .pick-row {
+  padding: 2px 14px;
+  background: #fff;
+  border: 2px solid var(--ob-line);
+  border-radius: 16px;
+  box-shadow: 0 3px 0 var(--ob-line);
+}
+
+.ob .pick-row.on {
+  background: #eaf3ff;
+  border-color: var(--ob-blue);
+  box-shadow: 0 3px 0 rgba(11, 99, 240, 0.35);
+}
+
+.ob .pick-row label {
+  position: relative;
+  min-height: 52px;
+}
+
+/* 라디오 버튼은 숨기고 카드 전체를 눌러 고른다 (키보드와 화면 읽기 도구는 그대로 쓸 수 있다) */
+.ob .pick-row input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.ob .pick-row:has(input:focus-visible) {
+  outline: 3px solid rgba(11, 99, 240, 0.4);
+  outline-offset: 2px;
+}
+
+.ob .pick-name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 17px;
+}
+
+.ob .pick-row.on .pick-name {
+  color: var(--ob-blue);
+}
+
+.ob .pick-kind {
+  font-size: 13px;
+  color: var(--ob-muted);
+}
+
+.ob .stepper {
+  padding: 0 0 12px;
+  color: var(--ob-muted);
+}
+
+.ob .stepper button {
+  background: #fff;
+  color: var(--ob-blue);
+  border: 1.5px solid var(--ob-line);
+}
+
+.ob .stepper b {
+  color: var(--ob-ink);
+}
+
+.ob .locked-row {
+  min-height: 56px;
+  color: var(--ob-muted);
+  background: var(--ob-soft);
+  border-style: dashed;
+  box-shadow: none;
+}

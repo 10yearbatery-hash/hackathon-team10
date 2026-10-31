@@ -109,7 +109,7 @@ export default function Clear({ proofId }: { proofId: string }) {
 
       <div className="clear-chip">
         <span ref={chipRef} className={`v3-coin ${beat >= 3 ? "filling" : ""}`} data-testid="clear-coins">
-          <i aria-hidden="true">●</i>
+          <i aria-hidden="true" />
           <b>{shown}</b>
         </span>
       </div>
