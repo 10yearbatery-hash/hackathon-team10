@@ -6,9 +6,14 @@ import {
   STAGES_PER_CHAPTER,
   CHAPTERS,
   VIDEO_SECONDS,
+  CUSTOM_ICONS,
+  CUSTOM_MISSION_LIMIT,
+  CUSTOM_NAME_MAX,
+  allMissions,
   dateKey,
   missionDef,
   type AppState,
+  type ProofKind,
   type MissionId,
   type MissionSetting,
   type Proof
@@ -39,7 +44,7 @@ export function cardStatus(state: AppState, missionId: MissionId, stage = state.
 }
 
 export function stageCards(state: AppState, stage = state.stage) {
-  return state.missions.map((m) => ({ ...missionDef(m.id), seconds: m.seconds, status: cardStatus(state, m.id, stage) }));
+  return state.missions.map((m) => ({ ...missionDef(m.id, state.customMissions), seconds: m.seconds, status: cardStatus(state, m.id, stage) }));
 }
 
 export function doneCount(state: AppState, stage = state.stage): number {
@@ -129,7 +134,7 @@ export function submitProof(state: AppState, input: { id: string; missionId: Mis
     (!practice && (isResting(state, input.now) || cardStatus(state, input.missionId) === "done"));
   if (blocked) return { state, proof: null, climbed: false };
 
-  const def = missionDef(input.missionId);
+  const def = missionDef(input.missionId, state.customMissions);
   const proof: Proof = {
     id: input.id,
     missionId: def.id,
@@ -208,10 +213,43 @@ export function saveGifts(state: AppState, gifts: { id: string; name: string; pr
 
 /** F-34, R-14: 무료는 미션 1개. 구독하면 여러 개. 빈 목록은 저장하지 않는다 */
 export function saveMissions(state: AppState, missions: MissionSetting[]): AppState {
-  const unique = missions.filter((m, i) => missions.findIndex((x) => x.id === m.id) === i);
+  const known = allMissions(state);
+  const unique = missions.filter((m, i) => missions.findIndex((x) => x.id === m.id) === i && known.some((d) => d.id === m.id));
   if (unique.length === 0) return state;
   if (!state.subscribed && unique.length > 1) return state;
   return { ...state, missions: unique.map((m) => ({ id: m.id, seconds: clampSeconds(m.seconds) })) };
+}
+
+// ---------- 부모가 직접 만드는 미션 (ADR-018) ----------
+
+/** 이름이 쓸 수 없으면 이유를, 괜찮으면 null */
+export function customMissionError(state: AppState, name: string): string | null {
+  const n = name.trim();
+  if (n.length === 0) return "미션 이름을 적어 주세요";
+  if (n.length > CUSTOM_NAME_MAX) return `미션 이름은 ${CUSTOM_NAME_MAX}자까지 쓸 수 있어요`;
+  if (allMissions(state).some((m) => m.name === n)) return "같은 이름의 미션이 이미 있어요";
+  if ((state.customMissions ?? []).length >= CUSTOM_MISSION_LIMIT) return `직접 만든 미션은 ${CUSTOM_MISSION_LIMIT}개까지예요`;
+  return null;
+}
+
+export type AddMissionResult = { ok: true; state: AppState } | { ok: false; error: string; state: AppState };
+
+/** 새 미션을 미션 목록(고를 수 있는 것)에 더한다. 지금 할 미션으로 넣는 건 saveMissions가 한다 */
+export function addCustomMission(state: AppState, input: { id: string; name: string; icon: string; kind: ProofKind }): AddMissionResult {
+  const error = customMissionError(state, input.name);
+  if (error) return { ok: false, error, state };
+  if (allMissions(state).some((m) => m.id === input.id)) return { ok: false, error: "잠시 후 다시 시도해 주세요", state };
+  const name = input.name.trim();
+  const icon = CUSTOM_ICONS.includes(input.icon) ? input.icon : CUSTOM_ICONS[0];
+  const def = { id: input.id, name, icon, kind: input.kind, cheer: name };
+  return { ok: true, state: { ...state, customMissions: [...(state.customMissions ?? []), def] } };
+}
+
+/** 직접 만든 미션을 지운다. 지금 하고 있는 미션이면 지우지 않는다. 예전 인증 기록은 남는다 */
+export function removeCustomMission(state: AppState, id: string): AppState {
+  const list = state.customMissions ?? [];
+  if (!list.some((m) => m.id === id) || state.missions.some((m) => m.id === id)) return state;
+  return { ...state, customMissions: list.filter((m) => m.id !== id) };
 }
 
 /** F-36, ADR-008: 가짜 결제를 마치면 구독 상태가 켜진다 */

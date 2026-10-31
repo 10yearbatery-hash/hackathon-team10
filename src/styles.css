@@ -2166,3 +2166,71 @@ p {
   gap: 10px;
   margin-top: 6px;
 }
+
+/* ---------- P5 미션 직접 만들기 (ADR-018) ---------- */
+.pick-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pick-line .pick-row {
+  flex: 1;
+}
+
+.pick-remove {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  color: #8f84a6;
+  font-size: 16px;
+}
+
+.pick-row.pick-make {
+  border-style: dashed;
+  border-color: var(--p-purple);
+  color: var(--p-purple);
+  font-weight: 700;
+}
+
+.make-mission {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+}
+
+.kind-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.kind-toggle button,
+.icon-grid button {
+  min-height: 48px;
+  border: 1.5px solid var(--p-line);
+  border-radius: 14px;
+  background: #fff;
+  font-weight: 700;
+}
+
+.kind-toggle button.on,
+.icon-grid button.on {
+  border-color: var(--p-purple);
+  background: #f3edff;
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: 6px;
+}
+
+.icon-grid button {
+  min-height: 48px;
+  padding: 0;
+  font-size: 20px;
+}

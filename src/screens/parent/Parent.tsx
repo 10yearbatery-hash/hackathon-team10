@@ -1,9 +1,9 @@
 // P1~P7 부모 영역. 아이 영역과 다른 보라색 분위기로 "지금 부모 화면"이 보이게 한다 (PRD 10장)
 import { useEffect, useState } from "react";
-import { MISSIONS, missionDef, type MissionId, type MissionSetting } from "../../core/model";
-import { giftIsValid, giveGift, openPurchases, pendingProofs, reviewProof, saveGifts, saveMissions, subscribe } from "../../core/rules";
+import { allMissions, CUSTOM_ICONS, CUSTOM_NAME_MAX, missionDef, type MissionId, type MissionSetting, type ProofKind } from "../../core/model";
+import { addCustomMission, giftIsValid, giveGift, openPurchases, removeCustomMission, pendingProofs, reviewProof, saveGifts, saveMissions, subscribe } from "../../core/rules";
 import { go } from "../../app/router";
-import { handoff, resetApp, update, useAppState } from "../../app/store";
+import { commit, getState, handoff, makeId, resetApp, update, useAppState } from "../../app/store";
 import { sfx } from "../../platform/sound";
 import { loadMedia, logout, useSync } from "../../app/sync";
 import { Icon } from "../../ui/icons";
@@ -286,7 +286,7 @@ export function Review() {
       <div className="scroll-body parent-body">
         <div className="row between review-meta">
           <b data-testid="review-mission">
-            {missionDef(proof.missionId).icon} {proof.missionName}
+            {missionDef(proof.missionId, state.customMissions).icon} {proof.missionName}
           </b>
           <span className="muted">
             {proof.stage}단계 · {timeText(proof.at)}
@@ -356,6 +356,30 @@ export function MissionManage() {
   const [list, setList] = useState<MissionSetting[]>(state.missions);
   const [picker, setPicker] = useState<{ replace: MissionId | null } | null>(null);
   const [saved, setSaved] = useState(false);
+  // 직접 만들기 (ADR-018)
+  const [making, setMaking] = useState(false);
+  const [draft, setDraft] = useState<{ name: string; icon: string; kind: ProofKind }>({ name: "", icon: CUSTOM_ICONS[0], kind: "photo" });
+  const [draftError, setDraftError] = useState("");
+
+  function openPicker(replace: MissionId | null) {
+    setMaking(false);
+    setDraftError("");
+    setPicker({ replace });
+  }
+
+  function create() {
+    const id = makeId("c");
+    const r = addCustomMission(getState(), { id, ...draft });
+    if (!r.ok) {
+      sfx.soft();
+      return setDraftError(r.error);
+    }
+    commit(r.state);
+    sfx.coin();
+    setDraft({ name: "", icon: CUSTOM_ICONS[0], kind: "photo" });
+    setMaking(false);
+    choose(id);
+  }
 
   function choose(id: MissionId) {
     setList((l) => {
@@ -371,14 +395,14 @@ export function MissionManage() {
     setSaved(true);
   }
 
-  const unused = MISSIONS.filter((m) => !list.some((x) => x.id === m.id));
+  const unused = allMissions(state).filter((m) => !list.some((x) => x.id === m.id));
 
   return (
     <section className="screen parent" data-testid="screen-missions">
       <TopBar title="미션 관리" onBack={() => go("/parent")} tone="parent" />
       <div className="scroll-body parent-body">
         {list.map((m) => {
-          const def = missionDef(m.id);
+          const def = missionDef(m.id, state.customMissions);
           return (
             <div key={m.id} className="manage-card" data-testid={`manage-${m.id}`}>
               <div className="row between">
@@ -398,7 +422,7 @@ export function MissionManage() {
                 />
               )}
               <div className="row gap">
-                <button className="btn btn-outline-p btn-sm" onClick={() => setPicker({ replace: m.id })} disabled={unused.length === 0} data-testid="swap">
+                <button className="btn btn-outline-p btn-sm" onClick={() => openPicker(m.id)} data-testid="swap">
                   미션 바꾸기
                 </button>
                 {state.subscribed && (
@@ -418,7 +442,7 @@ export function MissionManage() {
           );
         })}
         {state.subscribed ? (
-          <button className="menu-wide" onClick={() => setPicker({ replace: null })} disabled={unused.length === 0} data-testid="add-mission">
+          <button className="menu-wide" onClick={() => openPicker(null)} data-testid="add-mission">
             <span>＋</span>
             <b>미션 추가하기</b>
             <small>한 단계에 미션이 늘어나요</small>
@@ -446,16 +470,85 @@ export function MissionManage() {
       </div>
       {picker && (
         <Modal onClose={() => setPicker(null)} testId="mission-picker">
-          <h2>{picker.replace ? "어떤 미션으로 바꿀까요?" : "추가할 미션을 골라요"}</h2>
-          <div className="picker-list">
-            {unused.map((m) => (
-              <button key={m.id} className="pick-row" onClick={() => choose(m.id)} data-testid={`picker-${m.id}`}>
-                <span className="pick-icon">{m.icon}</span>
-                <span className="pick-name">{m.name}</span>
-                <span className={`badge ${m.kind}`}>{m.kind === "video" ? "영상" : "사진"}</span>
-              </button>
-            ))}
-          </div>
+          {making ? (
+            <div className="make-mission" data-testid="make-mission">
+              <h2>새 미션 만들기</h2>
+              <label className="account-label">
+                미션 이름 ({CUSTOM_NAME_MAX}자까지)
+                <input
+                  className="field"
+                  value={draft.name}
+                  maxLength={CUSTOM_NAME_MAX}
+                  placeholder="예: 이불 개기"
+                  onChange={(e) => {
+                    setDraft((d) => ({ ...d, name: e.target.value }));
+                    setDraftError("");
+                  }}
+                  data-testid="make-name"
+                />
+              </label>
+              <div className="account-label">
+                인증 방법
+                <div className="kind-toggle">
+                  {(["photo", "video"] as const).map((k) => (
+                    <button key={k} className={draft.kind === k ? "on" : ""} onClick={() => setDraft((d) => ({ ...d, kind: k }))} data-testid={`make-kind-${k}`}>
+                      {k === "photo" ? "📷 사진" : "🎬 영상"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="account-label">
+                그림
+                <div className="icon-grid">
+                  {CUSTOM_ICONS.map((ic, i) => (
+                    <button key={ic} className={draft.icon === ic ? "on" : ""} onClick={() => setDraft((d) => ({ ...d, icon: ic }))} aria-label={`그림 ${i + 1}`} data-testid={`make-icon-${i}`}>
+                      {ic}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {draftError && (
+                <p className="error" data-testid="make-error">
+                  {draftError}
+                </p>
+              )}
+              <div className="row gap">
+                <button className="btn btn-ghost grow" onClick={() => setMaking(false)}>
+                  뒤로
+                </button>
+                <button className="btn btn-purple grow" onClick={create} disabled={draft.name.trim() === ""} data-testid="make-ok">
+                  만들기
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <h2>{picker.replace ? "어떤 미션으로 바꿀까요?" : "추가할 미션을 골라요"}</h2>
+              <div className="picker-list">
+                {unused.map((m) => {
+                  const mine = (state.customMissions ?? []).some((c) => c.id === m.id);
+                  return (
+                    <div key={m.id} className="pick-line">
+                      <button className="pick-row" onClick={() => choose(m.id)} data-testid={`picker-${m.id}`}>
+                        <span className="pick-icon">{m.icon}</span>
+                        <span className="pick-name">{m.name}</span>
+                        <span className={`badge ${m.kind}`}>{m.kind === "video" ? "영상" : "사진"}</span>
+                      </button>
+                      {mine && (
+                        <button className="pick-remove" onClick={() => update((s) => removeCustomMission(s, m.id))} aria-label={`${m.name} 지우기`} data-testid={`remove-${m.id}`}>
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                <button className="pick-row pick-make" onClick={() => setMaking(true)} data-testid="make-mission-open">
+                  <span className="pick-icon">＋</span>
+                  <span className="pick-name">직접 만들기</span>
+                </button>
+              </div>
+            </>
+          )}
         </Modal>
       )}
     </section>

@@ -1,6 +1,6 @@
 // 화면 고르기와 들어갈 수 있는지 확인 (유저저니 3장)
 import { useEffect } from "react";
-import { MISSIONS, type MissionId } from "./core/model";
+import { allMissions, type AppState, type MissionId } from "./core/model";
 import { go, match, useRoute } from "./app/router";
 import { handoff, useAppState } from "./app/store";
 import { Descent, HandToParent, Intro, SetupMission, SetupName, SetupPin, Start } from "./screens/onboarding/Onboarding";
@@ -15,8 +15,8 @@ import { BoughtGifts, GiftManage, MissionManage, ParentHome, ParentPin, Review, 
 const ONBOARDING = ["/start", "/intro", "/descent", "/handoff", "/setup/pin", "/setup/name", "/setup/mission"];
 const PARENT_LOCKED = ["/parent", "/parent/review", "/parent/gifts", "/parent/missions", "/parent/shop", "/parent/account"];
 
-function isMission(id: string): id is MissionId {
-  return MISSIONS.some((m) => m.id === id);
+function isMission(id: string, state: AppState): id is MissionId {
+  return allMissions(state).some((m) => m.id === id);
 }
 
 /** 지금 상태에서 이 주소로 갈 수 없으면 갈 곳을 돌려준다 */
@@ -54,6 +54,7 @@ export default function App() {
 }
 
 function Screen({ path }: { path: string }) {
+  const state = useAppState();
   const capture = match("/capture/:id", path);
   const first = match("/first/:id", path);
   const clear = match("/clear/:id", path);
@@ -65,8 +66,8 @@ function Screen({ path }: { path: string }) {
   if (path === "/setup/pin") return <SetupPin />;
   if (path === "/setup/name") return <SetupName />;
   if (path === "/setup/mission") return <SetupMission />;
-  if (first && isMission(first.id)) return <Capture key={path} missionId={first.id} first />;
-  if (capture && isMission(capture.id)) return <Capture key={path} missionId={capture.id} />;
+  if (first && isMission(first.id, state)) return <Capture key={path} missionId={first.id} first />;
+  if (capture && isMission(capture.id, state)) return <Capture key={path} missionId={capture.id} />;
   if (clear) return <Clear key={path} proofId={clear.id} />;
   if (path === "/home") return <Home />;
   if (path === "/shop") return <Shop />;

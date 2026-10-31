@@ -177,14 +177,22 @@ test("사진 미션, 미션 두 개, 처음 상태로 되돌리기", async ({ pa
   await page.getByTestId("first-banner-ok").click();
   await page.getByTestId("tab-parent").click();
   await pin(page, "1234");
-  // 구독하고 사진 미션을 추가
+  // 구독하고, 부모가 직접 만든 사진 미션을 추가 (ADR-018)
   await page.getByTestId("go-subscribe").click();
   await page.getByTestId("sub-start").click();
   await page.getByTestId("pay").click();
   await page.getByTestId("sub-back").click();
   await page.getByTestId("go-missions").click();
   await page.getByTestId("add-mission").click();
-  await page.getByTestId("picker-book").click();
+  await page.getByTestId("make-mission-open").click();
+  await page.getByTestId("make-name").fill("양치하기");
+  await page.getByTestId("make-ok").click();
+  await expect(page.getByTestId("make-error")).toHaveText("같은 이름의 미션이 이미 있어요");
+  await page.getByTestId("make-name").fill("이불 개기");
+  await page.getByTestId("make-icon-1").click();
+  await shot(page, "p5-make-mission");
+  await page.getByTestId("make-ok").click();
+  await expect(page.locator('[data-testid^="manage-c-"]')).toContainText("이불 개기");
   await page.getByTestId("save-missions").click();
   await expect(page.getByTestId("save-missions")).toHaveText("저장했어요");
   await page.getByTestId("back").click();
@@ -196,7 +204,8 @@ test("사진 미션, 미션 두 개, 처음 상태로 되돌리기", async ({ pa
   await page.getByTestId("retry-later").click();
   await page.getByTestId("stage-1").click();
   await expect(page.getByTestId("sheet-count")).toHaveText("오늘 0 / 2 완료");
-  await page.getByTestId("go-book").click();
+  await expect(page.locator('[data-testid^="mission-c-"]')).toContainText("이불 개기");
+  await page.locator('[data-testid^="go-c-"]').click();
   await expect(page.getByTestId("timer")).toHaveText("");
   await page.getByTestId("shoot").click();
   await expect(page.getByTestId("preview")).toBeVisible();
@@ -207,7 +216,7 @@ test("사진 미션, 미션 두 개, 처음 상태로 되돌리기", async ({ pa
   // 아직 하나 남아서 단계 팝업으로 돌아온다
   await expect(page.getByTestId("stage-sheet")).toBeVisible();
   await expect(page.getByTestId("sheet-count")).toHaveText("오늘 1 / 2 완료");
-  await expect(page.getByTestId("mission-book")).toHaveAttribute("data-status", "done");
+  await expect(page.locator('[data-testid^="mission-c-"]')).toHaveAttribute("data-status", "done");
   await shot(page, "c2-sheet-half");
 
   // 시연용 초기화

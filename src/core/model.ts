@@ -1,6 +1,7 @@
 // 앱 상태와 기본 데이터. React와 브라우저 기능 없이 순수 TypeScript로 둔다 (ADR-002).
 
-export type MissionId = "brush" | "wash" | "vitamin" | "book" | "pack";
+/** 기본 미션은 "brush" 같은 이름, 부모가 만든 미션은 "c-"로 시작한다 (ADR-018) */
+export type MissionId = string;
 export type ProofKind = "video" | "photo";
 /** clear = 제출 직후, ok = 부모 성공, fail = 부모 실패 (서비스기획 12장) */
 export type ProofStatus = "clear" | "ok" | "fail";
@@ -68,6 +69,8 @@ export interface AppState {
   proofs: Proof[];
   gifts: Gift[];
   purchases: Purchase[];
+  /** 부모가 직접 만든 미션 (ADR-018). 예전에 저장한 상태에는 없을 수 있다 */
+  customMissions?: MissionDef[];
 }
 
 export const COIN_PER_MISSION = 10;
@@ -83,6 +86,11 @@ export const MISSIONS: MissionDef[] = [
   { id: "book", name: "책읽기", icon: "📚", kind: "photo", cheer: "책 읽자" },
   { id: "pack", name: "준비물 챙기기", icon: "🎒", kind: "photo", cheer: "준비물 챙기자" }
 ];
+
+/** 직접 만드는 미션의 이름 길이와 개수 한도, 고를 수 있는 그림 */
+export const CUSTOM_NAME_MAX = 12;
+export const CUSTOM_MISSION_LIMIT = 20;
+export const CUSTOM_ICONS = ["⭐", "🛏️", "🧹", "👕", "🥛", "🍎", "🚿", "🧸", "✏️", "🎹", "⚽", "🌱", "🐶", "💤", "🎨"];
 
 export const DEFAULT_GIFTS: Gift[] = [
   { id: "g-movie", name: "가족 영화 보기", icon: "🎬", price: 50 },
@@ -119,10 +127,14 @@ export const CHAPTERS: Chapter[] = [
   { name: "보라빛 마법성", says: ["이제 마지막 열 걸음.", "공주를 드디어 만날 수 있어!"], next: "마지막 문 너머에서 기다리고 있어요.", stone: "purple", sayColor: "#7841ae", labelColor: "#60487e" }
 ];
 
-export function missionDef(id: MissionId): MissionDef {
-  const def = MISSIONS.find((m) => m.id === id);
-  if (!def) throw new Error(`unknown mission ${id}`);
-  return def;
+/** 기본 미션과 부모가 만든 미션 전부 */
+export function allMissions(state: Pick<AppState, "customMissions">): MissionDef[] {
+  return [...MISSIONS, ...(state.customMissions ?? [])];
+}
+
+/** 미션 정보. 지운 미션의 예전 인증처럼 찾을 수 없으면 기본 모양으로 돌려준다 */
+export function missionDef(id: MissionId, custom: MissionDef[] = []): MissionDef {
+  return MISSIONS.find((m) => m.id === id) ?? custom.find((m) => m.id === id) ?? { id, name: "미션", icon: "⭐", kind: "photo", cheer: "미션 하자" };
 }
 
 export function emptyState(): AppState {
@@ -137,7 +149,8 @@ export function emptyState(): AppState {
     restDate: null,
     proofs: [],
     gifts: DEFAULT_GIFTS.map((g) => ({ ...g })),
-    purchases: []
+    purchases: [],
+    customMissions: []
   };
 }
 

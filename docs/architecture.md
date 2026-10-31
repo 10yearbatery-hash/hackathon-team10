@@ -77,13 +77,14 @@ e2e/                         # Playwright 스펙, screenshots/ (git 제외)
   version: 1,
   onboarded: boolean,          // 온보딩 첫 미션 제출까지 마쳤는가
   pin: "1234", childName: "하늘", subscribed: boolean,
-  missions: [{ id: "brush" | "wash" | "vitamin" | "book" | "pack", seconds }],  // 무료는 1개
+  missions: [{ id: "brush" | "wash" | "vitamin" | "book" | "pack" | "c-…", seconds }],  // 무료는 1개
   stage: 1..100,               // 캐릭터가 서 있는 단계
   restDate: "YYYY-MM-DD" | null,  // 이 날 단계를 다 깼다 = 지금 단계는 "내일 만나자"
   proofs: [{ id, missionId, missionName, kind: "video" | "photo", stage, date, at,
              status: "clear" | "ok" | "fail", failSeen }],
   gifts: [{ id, name, icon, price }],            // 4개 고정
-  purchases: [{ id, giftId, name, icon, price, at, given }]
+  purchases: [{ id, giftId, name, icon, price, at, given }],
+  customMissions?: [{ id: "c-…", name, icon, kind, cheer }]  // 부모가 만든 미션 (ADR-018). 없으면 빈 목록
 }
 ```
 

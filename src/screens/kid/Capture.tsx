@@ -12,7 +12,7 @@ import { Icon } from "../../ui/icons";
 type Phase = "ready" | "recording" | "review" | "saving";
 
 export default function Capture({ missionId, first = false }: { missionId: MissionId; first?: boolean }) {
-  const def = missionDef(missionId);
+  const def = missionDef(missionId, getState().customMissions);
   const setting = getState().missions.find((m) => m.id === missionId);
   const seconds = setting?.seconds ?? 15;
   const camRef = useRef<HTMLVideoElement>(null);

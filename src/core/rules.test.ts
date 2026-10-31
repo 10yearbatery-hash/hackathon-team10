@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { emptyState, type AppState } from "./model";
+import { emptyState, missionDef, type AppState } from "./model";
 import {
+  addCustomMission,
   buyGift,
   cardStatus,
   coins,
@@ -9,6 +10,7 @@ import {
   isResting,
   markFailsSeen,
   pendingProofs,
+  removeCustomMission,
   reviewProof,
   saveGifts,
   saveMissions,
@@ -210,5 +212,51 @@ describe("온보딩 연습 미션 (ADR-014)", () => {
     expect(failed.stage).toBe(1);
     expect(failed.proofs.find((p) => p.id === "p1")?.dropped).toBe(true);
     expect(cardStatus(failed, "brush")).toBe("retry");
+  });
+});
+
+describe("부모가 직접 만드는 미션 (ADR-018)", () => {
+  it("이름을 확인하고 미션 목록에 더한다", () => {
+    const s = setup();
+    expect(addCustomMission(s, { id: "c-1", name: "  ", icon: "🛏️", kind: "photo" }).ok).toBe(false);
+    expect(addCustomMission(s, { id: "c-1", name: "양치하기", icon: "🛏️", kind: "photo" }).ok).toBe(false);
+    expect(addCustomMission(s, { id: "c-1", name: "가".repeat(13), icon: "🛏️", kind: "photo" }).ok).toBe(false);
+    const r = addCustomMission(s, { id: "c-1", name: " 이불 개기 ", icon: "🛏️", kind: "photo" });
+    expect(r.ok).toBe(true);
+    expect(r.state.customMissions).toEqual([{ id: "c-1", name: "이불 개기", icon: "🛏️", kind: "photo", cheer: "이불 개기" }]);
+  });
+
+  it("만든 미션으로 바꾸면 인증과 코인이 기본 미션과 똑같이 된다", () => {
+    const made = addCustomMission(setup(), { id: "c-1", name: "줄넘기", icon: "⚽", kind: "video" }).state;
+    const s = saveMissions(made, [{ id: "c-1", seconds: 10 }]);
+    expect(s.missions).toEqual([{ id: "c-1", seconds: 10 }]);
+    expect(cardStatus(s, "c-1")).toBe("todo");
+    const r = submitProof(s, { id: "p1", missionId: "c-1", now: DAY1 });
+    expect(r.proof?.missionName).toBe("줄넘기");
+    expect(r.proof?.kind).toBe("video");
+    expect(r.state.stage).toBe(2);
+    expect(coins(r.state)).toBe(10);
+  });
+
+  it("없는 미션으로는 바꿀 수 없다", () => {
+    const s = setup();
+    expect(saveMissions(s, [{ id: "c-none", seconds: 10 }])).toBe(s);
+  });
+
+  it("지금 하는 미션은 지울 수 없고, 지운 미션의 예전 인증은 기본 모양으로 보인다", () => {
+    const made = addCustomMission(setup(), { id: "c-1", name: "줄넘기", icon: "⚽", kind: "photo" }).state;
+    const using = saveMissions(made, [{ id: "c-1", seconds: 15 }]);
+    expect(removeCustomMission(using, "c-1")).toBe(using);
+    const back = saveMissions(using, [{ id: "brush", seconds: 15 }]);
+    const removed = removeCustomMission(back, "c-1");
+    expect(removed.customMissions).toEqual([]);
+    expect(missionDef("c-1", removed.customMissions).icon).toBe("⭐");
+  });
+
+  it("예전에 저장한 상태(customMissions 없음)도 그대로 동작한다", () => {
+    const old = { ...setup() } as AppState;
+    delete old.customMissions;
+    expect(addCustomMission(old, { id: "c-1", name: "물 마시기", icon: "🥛", kind: "photo" }).ok).toBe(true);
+    expect(removeCustomMission(old, "c-1")).toBe(old);
   });
 });
