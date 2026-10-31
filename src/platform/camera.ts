@@ -2,23 +2,36 @@
 
 export type CameraError = "denied" | "unavailable";
 
+/** 앞(셀카) 카메라와 뒤 카메라 */
+export type Facing = "user" | "environment";
+
 /** 카메라를 연다. 방금 다른 화면이 카메라를 놓은 직후처럼 잠깐 못 여는 경우가 있어 한 번 더 시도한다 */
-export async function openCamera(): Promise<MediaStream> {
+export async function openCamera(facing: Facing = "user"): Promise<MediaStream> {
   try {
-    return await openOnce();
+    return await openOnce(facing);
   } catch (error) {
     if (error === "denied") throw error;
     await new Promise((r) => setTimeout(r, 600));
-    return openOnce();
+    return openOnce(facing);
   }
 }
 
-async function openOnce(): Promise<MediaStream> {
+/** 카메라가 몇 개인지. 브라우저는 카메라 권한을 받은 뒤에야 정확히 알려 주므로 카메라를 연 다음에 부른다 */
+export async function countCameras(): Promise<number> {
+  try {
+    const devices = (await navigator.mediaDevices?.enumerateDevices?.()) ?? [];
+    return devices.filter((d) => d.kind === "videoinput").length;
+  } catch {
+    return 0;
+  }
+}
+
+async function openOnce(facing: Facing): Promise<MediaStream> {
   if (!navigator.mediaDevices?.getUserMedia) throw "unavailable" satisfies CameraError;
   try {
     return await navigator.mediaDevices.getUserMedia({
       audio: false,
-      video: { facingMode: "user", width: { ideal: 480 }, height: { ideal: 640 }, frameRate: { ideal: 15, max: 24 } }
+      video: { facingMode: { ideal: facing }, width: { ideal: 480 }, height: { ideal: 640 }, frameRate: { ideal: 15, max: 24 } }
     });
   } catch (error) {
     const name = (error as DOMException)?.name;
@@ -41,10 +54,19 @@ export function takePhoto(video: HTMLVideoElement): Promise<Blob> {
   return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("photo"))), "image/jpeg", 0.7));
 }
 
-/** mp4(H.264)를 먼저 고른다. 아이폰 Safari와 최신 Chrome이 녹화할 수 있고, 거의 모든 브라우저가 재생한다.
- *  webm은 Safari에서 녹화는 돼도 재생이 불안정해 뒤로 둔다 */
+/** 아이폰·아이패드(모든 브라우저가 Safari 엔진)와 Mac Safari */
+function isAppleWebKit(): boolean {
+  const ua = navigator.userAgent;
+  const ios = /iPad|iPhone|iPod/.test(ua) || (ua.includes("Macintosh") && navigator.maxTouchPoints > 1);
+  return ios || (/Safari/.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|Edg|Android/.test(ua));
+}
+
+/** 녹화 형식. Safari는 mp4가 기본이고 webm은 녹화돼도 재생이 불안정해 mp4를 먼저 쓴다.
+ *  Chrome·Edge·Firefox는 webm이 안정적이다. Chrome의 mp4 녹화는 가끔 빈 파일을 만든다 (2026-11-01 시험) */
 function pickMime(): string {
-  const options = ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp8", "video/webm"];
+  const webm = ["video/webm;codecs=vp8", "video/webm"];
+  const mp4 = ["video/mp4;codecs=avc1", "video/mp4"];
+  const options = isAppleWebKit() ? [...mp4, ...webm] : [...webm, ...mp4];
   return options.find((t) => typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(t)) ?? "";
 }
 

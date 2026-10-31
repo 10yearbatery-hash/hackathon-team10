@@ -4,7 +4,7 @@ import { missionDef, type MissionId } from "../../core/model";
 import { completeOnboarding, submitProof } from "../../core/rules";
 import { go } from "../../app/router";
 import { commit, getState, handoff, makeId } from "../../app/store";
-import { openCamera, recordVideo, stopCamera, takePhoto, type CameraError } from "../../platform/camera";
+import { countCameras, openCamera, recordVideo, stopCamera, takePhoto, type CameraError, type Facing } from "../../platform/camera";
 import { sfx } from "../../platform/sound";
 import { saveMedia } from "../../app/sync";
 import { Icon } from "../../ui/icons";
@@ -25,17 +25,19 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
   const [left, setLeft] = useState(seconds);
   const [attempt, setAttempt] = useState(0);
   const [camReady, setCamReady] = useState(false);
+  const [facing, setFacing] = useState<Facing>("user");
+  const [canFlip, setCanFlip] = useState(false);
 
   useEffect(() => {
     if (!setting) go("/home", { replace: true });
   }, [setting]);
 
-  // 카메라 켜기
+  // 카메라 켜기. 앞/뒤를 바꾸면 다시 연다
   useEffect(() => {
     let alive = true;
     setError(null);
     setCamReady(false);
-    openCamera()
+    openCamera(facing)
       .then((stream) => {
         if (!alive) return stopCamera(stream);
         streamRef.current = stream;
@@ -44,15 +46,26 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
           void camRef.current.play().catch(() => undefined);
         }
         setCamReady(true);
+        // 카메라가 둘 이상인 기기에서만 전환 버튼을 보인다
+        void countCameras().then((n) => alive && setCanFlip(n > 1));
       })
-      .catch((e: CameraError) => alive && setError(e));
+      .catch((e: CameraError) => {
+        if (!alive) return;
+        // 뒤 카메라를 못 열면 앞 카메라로 돌아가고 전환 버튼을 숨긴다
+        if (facing === "environment" && e !== "denied") {
+          setCanFlip(false);
+          setFacing("user");
+          return;
+        }
+        setError(e);
+      });
     return () => {
       alive = false;
       recRef.current?.cancel();
       stopCamera(streamRef.current);
       streamRef.current = null;
     };
-  }, [attempt]);
+  }, [attempt, facing]);
 
   useEffect(() => {
     if (!blob) return setPreviewUrl("");
@@ -102,6 +115,13 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
       });
   }, [def.kind, seconds]);
 
+  // 앞/뒤 카메라 바꾸기. 찍기 전에만 바꿀 수 있다
+  function flip() {
+    if (phase !== "ready" || !camReady) return;
+    sfx.tap();
+    setFacing((f) => (f === "user" ? "environment" : "user"));
+  }
+
   function retake() {
     sfx.tap();
     setBlob(null);
@@ -130,6 +150,8 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
   }
 
   const recording = phase === "recording";
+  // 앞 카메라는 거울처럼 좌우를 뒤집어 보여 주고, 뒤 카메라는 그대로 보여 준다
+  const rear = facing === "environment" ? "cam-rear" : "";
   const progress = def.kind === "video" ? 1 - left / seconds : 0;
 
   return (
@@ -166,9 +188,14 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
           </div>
         ) : (
           <>
-            <video ref={camRef} className={`cam ${phase === "review" ? "hidden" : ""}`} muted playsInline data-testid="camera" />
-            {phase === "review" && previewUrl && def.kind === "photo" && <img className="cam" src={previewUrl} alt="찍은 사진" data-testid="preview" />}
-            {phase === "review" && previewUrl && def.kind === "video" && <video className="cam" src={previewUrl} autoPlay loop muted playsInline data-testid="preview" />}
+            <video ref={camRef} className={`cam ${rear} ${phase === "review" ? "hidden" : ""}`} muted playsInline data-testid="camera" />
+            {phase === "review" && previewUrl && def.kind === "photo" && <img className={`cam ${rear}`} src={previewUrl} alt="찍은 사진" data-testid="preview" />}
+            {phase === "review" && previewUrl && def.kind === "video" && <video className={`cam ${rear}`} src={previewUrl} autoPlay loop muted playsInline data-testid="preview" />}
+            {canFlip && phase === "ready" && camReady && (
+              <button className="cam-flip" onClick={flip} aria-label={facing === "user" ? "뒤 카메라로 바꾸기" : "앞 카메라로 바꾸기"} data-testid="cam-flip">
+                <Icon name="refresh" size={20} />
+              </button>
+            )}
             {recording && (
               <span className="rec-dot" data-testid="rec">
                 ● 녹화 중

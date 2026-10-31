@@ -1450,6 +1450,31 @@ p {
   display: none;
 }
 
+/* 뒤 카메라는 거울로 뒤집지 않는다 */
+.cam.cam-rear {
+  transform: none;
+}
+
+/* 앞/뒤 카메라 바꾸기. 화면을 가리지 않게 작고 반투명하게, 누르는 영역은 48px */
+.cam-flip {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.42);
+  color: #fff;
+  backdrop-filter: blur(4px);
+}
+
+.cam-flip:active {
+  transform: scale(0.92);
+}
+
 .rec-dot {
   position: absolute;
   top: 12px;
