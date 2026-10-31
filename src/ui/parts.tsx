@@ -217,3 +217,20 @@ export function KidTabBar({ active }: { active: "home" | "shop" | "parent" }) {
     </nav>
   );
 }
+
+/**
+ * 살아 움직이는 펭귄. 위치(점프)와 몸(찌그러짐·늘어남)을 따로 움직여 자연스럽게 보이게 한다.
+ * 발밑이 기준점이라 착지할 때 납작해지고 뛸 때 길쭉해진다. 그림자는 높이에 따라 커졌다 작아진다.
+ */
+export function Actor({ variant, size = 190, talking = false, className = "" }: { variant: "splash" | "idle" | "hop-in"; size?: number; talking?: boolean; className?: string }) {
+  return (
+    <div className={`actor actor-${variant} ${talking ? "talking" : ""} ${className}`} style={{ width: size }}>
+      <span className="actor-shadow" aria-hidden="true" />
+      <div className="actor-move">
+        <div className="actor-body">
+          <img src="./char/hero_wave.png" alt="파란 펭귄" draggable={false} />
+        </div>
+      </div>
+    </div>
+  );
+}

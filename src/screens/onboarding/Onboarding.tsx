@@ -7,7 +7,7 @@ import { handoff, update } from "../../app/store";
 import { sfx, unlockSound } from "../../platform/sound";
 import { Icon } from "../../ui/icons";
 import { MAP_W, MapPath, scrollFor, TOTAL_H } from "../../ui/MapPath";
-import { Hero, nick, PinPad } from "../../ui/parts";
+import { Actor, Hero, nick, PinPad } from "../../ui/parts";
 import { msUntilReveal } from "../../ui/Splash";
 
 /** 부모 설정 중인 값. O7에서 한 번에 저장한다 */
@@ -68,7 +68,7 @@ export function Start() {
         <>
           <div className="welcome-body">
             <div className="welcome-hero">
-              <Hero pose="wave" size={200} />
+              <Actor variant="idle" size={190} />
             </div>
             <h1 className="welcome-logo">펭귄 모험</h1>
             <p className="welcome-sub">매일 작은 습관으로 공주를 구하러 가요!</p>
@@ -98,7 +98,7 @@ export function Start() {
               <span className="caret" aria-hidden="true" />
             </div>
             <div className="greet-hero">
-              <Hero pose="cheer" size={170} />
+              <Actor variant="hop-in" size={170} talking={!typed} className={typed ? "cheer" : ""} />
             </div>
           </div>
           <div className="bottom-cta">
