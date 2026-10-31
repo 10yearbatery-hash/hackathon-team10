@@ -18,6 +18,7 @@ import {
   type CloudUser
 } from "../platform/cloud";
 import { getMedia, listMediaKeys, loadSyncMeta, putMedia, saveSyncMeta } from "../platform/storage";
+import { upgradeState } from "../core/model";
 import { getState, onCommit, replaceState } from "./store";
 
 export type SyncStatus = "off" | "out" | "syncing" | "saved" | "error";
@@ -96,7 +97,7 @@ async function reconcile(user: CloudUser) {
     const meta = loadSyncMeta();
     const remote = await pullState(user.id);
     if (remote && remote.state?.version === 1 && !(meta.userId === user.id && meta.dirty)) {
-      replaceState(remote.state);
+      replaceState(upgradeState(remote.state));
       saveSyncMeta({ userId: user.id, dirty: false });
       set({ status: "saved", savedAt: remote.updatedAt });
     } else {

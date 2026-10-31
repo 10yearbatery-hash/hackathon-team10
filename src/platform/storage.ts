@@ -1,6 +1,6 @@
 // 저장소 감싸기 (ADR-002, ADR-003). 상태 JSON은 localStorage, 인증 사진·영상은 IndexedDB에 둔다.
 // 로그인하면 같은 내용을 서버에도 올린다 (ADR-017, app/sync.ts). 폰 안 저장이 항상 먼저다.
-import { emptyState, type AppState } from "../core/model";
+import { emptyState, upgradeState, type AppState } from "../core/model";
 
 const STATE_KEY = "penguin-adventure/v1";
 const SYNC_KEY = "penguin-adventure/sync";
@@ -12,7 +12,7 @@ export function loadState(): AppState {
     const raw = localStorage.getItem(STATE_KEY);
     if (!raw) return emptyState();
     const parsed = JSON.parse(raw) as AppState;
-    return parsed && parsed.version === 1 ? parsed : emptyState();
+    return parsed && parsed.version === 1 ? upgradeState(parsed) : emptyState();
   } catch {
     return emptyState();
   }

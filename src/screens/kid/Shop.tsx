@@ -17,7 +17,8 @@ const GIFT_DESC: Record<string, string> = {
   "g-movie": "팝콘과 함께 우리 가족 영화 시간",
   "g-dinner": "오늘 저녁은 내가 좋아하는 메뉴!",
   "g-play": "엄마 아빠랑 신나게 놀아요",
-  "g-park": "가족과 함께 나들이를 떠나요"
+  "g-park": "가족과 함께 나들이를 떠나요",
+  "g-hug": "엄마 아빠가 꼭 안아 줘요"
 };
 
 const STRIPES = Array.from({ length: 12 }, (_, i) => i);
@@ -161,7 +162,7 @@ export default function Shop() {
 
         {view.kind === "list" && (
           <div className="shop-list" data-testid="shop-list">
-            {state.gifts.map((g) => {
+            {[...state.gifts].sort((x, y) => x.price - y.price).map((g) => {
               const need = g.price - wallet;
               return (
                 <button key={g.id} className={`shop-item ${need > 0 ? "short" : ""}`} onClick={() => open(g)} data-testid={`gift-${g.id}`}>

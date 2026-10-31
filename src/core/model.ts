@@ -71,6 +71,8 @@ export interface AppState {
   purchases: Purchase[];
   /** 부모가 직접 만든 미션 (ADR-018). 예전에 저장한 상태에는 없을 수 있다 */
   customMissions?: MissionDef[];
+  /** 기본 선물을 어디까지 넣었는지 (ADR-019). 없으면 1 */
+  giftSeed?: number;
 }
 
 export const COIN_PER_MISSION = 10;
@@ -92,12 +94,21 @@ export const CUSTOM_NAME_MAX = 12;
 export const CUSTOM_MISSION_LIMIT = 20;
 export const CUSTOM_ICONS = ["⭐", "🛏️", "🧹", "👕", "🥛", "🍎", "🚿", "🧸", "✏️", "🎹", "⚽", "🌱", "🐶", "💤", "🎨"];
 
+/** 10코인 선물 (ADR-019). 첫 미션 하나로 바로 살 수 있다 */
+export const HUG_GIFT: Gift = { id: "g-hug", name: "꼭 안아 주기", icon: "🤗", price: 10 };
+
 export const DEFAULT_GIFTS: Gift[] = [
   { id: "g-movie", name: "가족 영화 보기", icon: "🎬", price: 50 },
   { id: "g-dinner", name: "저녁 메뉴 고르기", icon: "🍽️", price: 100 },
   { id: "g-play", name: "특별 놀이 20분", icon: "🧩", price: 150 },
-  { id: "g-park", name: "주말 공원 고르기", icon: "🌲", price: 200 }
+  { id: "g-park", name: "주말 공원 고르기", icon: "🌲", price: 200 },
+  HUG_GIFT
 ];
+
+/** 선물 관리 한도와 고를 수 있는 그림 (ADR-019) */
+export const GIFT_LIMIT = 12;
+export const GIFT_NAME_MAX = 16;
+export const GIFT_ICONS = ["🎁", "🤗", "🎬", "🍽️", "🧩", "🌲", "🍦", "🎮", "📚", "🧸", "🎨", "🚲", "🏊", "🍰", "⭐"];
 
 export type StoneKind = "ice" | "frost" | "melt" | "purple";
 
@@ -150,8 +161,19 @@ export function emptyState(): AppState {
     proofs: [],
     gifts: DEFAULT_GIFTS.map((g) => ({ ...g })),
     purchases: [],
-    customMissions: []
+    customMissions: [],
+    giftSeed: 2
   };
+}
+
+/**
+ * 예전에 저장한 상태를 지금 모양으로 맞춘다. 폰에서 읽을 때와 서버에서 받을 때 부른다.
+ * 기본 선물이 늘면 한 번만 넣는다. 부모가 지운 뒤에는 다시 넣지 않는다.
+ */
+export function upgradeState(state: AppState): AppState {
+  if ((state.giftSeed ?? 1) >= 2) return state;
+  const gifts = state.gifts.some((g) => g.id === HUG_GIFT.id) ? state.gifts : [...state.gifts, { ...HUG_GIFT }];
+  return { ...state, gifts, giftSeed: 2 };
 }
 
 /** 기기의 현지 날짜 (R-01: 기준은 현지 자정) */

@@ -2234,3 +2234,21 @@ p {
   padding: 0;
   font-size: 20px;
 }
+
+/* ---------- P6 선물 추가·삭제 (ADR-019) ---------- */
+.gift-icon-btn {
+  flex: none;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 14px;
+  border: 1.5px dashed var(--p-line);
+  background: #fff;
+}
+
+.gift-edit {
+  position: relative;
+}
+
+.gift-remove {
+  align-self: flex-start;
+}

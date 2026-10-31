@@ -118,6 +118,13 @@ test("다시 찍어서 클리어하고, 코인으로 선물을 사고 부모가 
   await page.getByTestId("save-gifts").click();
   await expect(page.getByTestId("gift-msg")).toContainText("10 이상");
   await page.getByTestId("gift-price-0").fill("10");
+  // 부모가 선물을 하나 더 만든다 (ADR-019)
+  await page.getByTestId("gift-add").click();
+  await page.getByTestId("gift-name-5").fill("놀이터 30분");
+  await page.getByTestId("gift-price-5").fill("30");
+  await page.getByTestId("gift-icon-5").click();
+  await page.getByTestId("gift-icon-pick-11").click();
+  await expect(page.getByTestId("gift-icon-5")).toHaveText("🚲");
   await page.getByTestId("save-gifts").click();
   await expect(page.getByTestId("gift-msg")).toHaveText("저장했어요");
   await shot(page, "p6-gifts");

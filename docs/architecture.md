@@ -41,7 +41,7 @@ src/
   v3.css                     # 피그마 v3 아이 영역: 지도, DAY 카드, V3 화면 (ADR-013)
   ob.css                     # 부모 설정 온보딩 O4~O7 (피그마 V3/O4~O7, ADR-016). 모든 규칙이 .ob 안에서만 적용
   core/
-    model.ts                 # 상태 타입, 기본 미션 5개, 기본 선물 4개, 상수
+    model.ts                 # 상태 타입, 기본 미션 5개, 기본 선물 5개, 예전 상태 맞추기(upgradeState), 상수
     rules.ts                 # 규칙 계산과 상태 변경 (R-xx)
     rules.test.ts
   platform/

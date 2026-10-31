@@ -7,6 +7,9 @@ import {
   CHAPTERS,
   VIDEO_SECONDS,
   CUSTOM_ICONS,
+  GIFT_ICONS,
+  GIFT_LIMIT,
+  GIFT_NAME_MAX,
   CUSTOM_MISSION_LIMIT,
   CUSTOM_NAME_MAX,
   allMissions,
@@ -199,14 +202,19 @@ export function giftIsValid(input: { name: string; price: number }): boolean {
   return input.name.trim().length > 0 && Number.isInteger(price) && price >= 10 && price <= 99999;
 }
 
-/** R-12: 선물 4개의 이름과 가격만 바꾼다. 하나라도 틀리면 저장하지 않는다 */
-export function saveGifts(state: AppState, gifts: { id: string; name: string; price: number }[]): AppState {
-  if (!gifts.every(giftIsValid)) return state;
+/**
+ * R-12, ADR-019: 부모가 선물 목록을 통째로 저장한다. 고치기, 더하기, 지우기를 한 번에 한다.
+ * 1~12개, 이름과 가격(10 이상)이 맞아야 하고, 하나라도 틀리면 저장하지 않는다. 이미 산 선물 기록은 그대로 남는다
+ */
+export function saveGifts(state: AppState, gifts: { id: string; name: string; price: number; icon?: string }[]): AppState {
+  if (gifts.length === 0 || gifts.length > GIFT_LIMIT || !gifts.every(giftIsValid)) return state;
+  if (new Set(gifts.map((g) => g.id)).size !== gifts.length) return state;
   return {
     ...state,
-    gifts: state.gifts.map((g) => {
-      const edit = gifts.find((e) => e.id === g.id);
-      return edit ? { ...g, name: edit.name.trim().slice(0, 16), price: Number(edit.price) } : g;
+    gifts: gifts.map((g) => {
+      const before = state.gifts.find((x) => x.id === g.id);
+      const icon = g.icon && GIFT_ICONS.includes(g.icon) ? g.icon : (before?.icon ?? GIFT_ICONS[0]);
+      return { id: g.id, name: g.name.trim().slice(0, GIFT_NAME_MAX), icon, price: Number(g.price) };
     })
   };
 }

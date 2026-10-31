@@ -1,6 +1,6 @@
 // P1~P7 부모 영역. 아이 영역과 다른 보라색 분위기로 "지금 부모 화면"이 보이게 한다 (PRD 10장)
 import { useEffect, useState } from "react";
-import { allMissions, CUSTOM_ICONS, CUSTOM_NAME_MAX, missionDef, type MissionId, type MissionSetting, type ProofKind } from "../../core/model";
+import { allMissions, CUSTOM_ICONS, CUSTOM_NAME_MAX, GIFT_ICONS, GIFT_LIMIT, GIFT_NAME_MAX, missionDef, type MissionId, type MissionSetting, type ProofKind } from "../../core/model";
 import { addCustomMission, giftIsValid, giveGift, openPurchases, removeCustomMission, pendingProofs, reviewProof, saveGifts, saveMissions, subscribe } from "../../core/rules";
 import { go } from "../../app/router";
 import { commit, getState, handoff, makeId, resetApp, update, useAppState } from "../../app/store";
@@ -560,9 +560,29 @@ export function GiftManage() {
   const state = useAppState();
   const [rows, setRows] = useState(state.gifts.map((g) => ({ id: g.id, icon: g.icon, name: g.name, price: String(g.price) })));
   const [msg, setMsg] = useState("");
+  const [iconFor, setIconFor] = useState<number | null>(null);
+
+  function edit(i: number, patch: Partial<(typeof rows)[number]>) {
+    setRows((x) => x.map((y, j) => (j === i ? { ...y, ...patch } : y)));
+    setMsg("");
+  }
+
+  function add() {
+    if (rows.length >= GIFT_LIMIT) return;
+    sfx.tap();
+    setRows((x) => [...x, { id: makeId("g"), icon: GIFT_ICONS[0], name: "", price: "10" }]);
+    setMsg("");
+  }
+
+  function remove(i: number) {
+    if (rows.length <= 1) return;
+    sfx.tap();
+    setRows((x) => x.filter((_, j) => j !== i));
+    setMsg("");
+  }
 
   function save() {
-    const data = rows.map((r) => ({ id: r.id, name: r.name, price: Number(r.price) }));
+    const data = rows.map((r) => ({ id: r.id, icon: r.icon, name: r.name, price: Number(r.price) }));
     if (!data.every(giftIsValid)) {
       setMsg("이름을 쓰고, 가격은 10 이상의 숫자로 적어 주세요");
       return;
@@ -579,16 +599,19 @@ export function GiftManage() {
         {rows.map((r, i) => {
           const bad = !giftIsValid({ name: r.name, price: Number(r.price) });
           return (
-            <div key={r.id} className={`manage-card gift-edit ${bad ? "bad" : ""}`}>
-              <span className="task-emoji">{r.icon}</span>
+            <div key={r.id} className={`manage-card gift-edit ${bad ? "bad" : ""}`} data-testid={`gift-row-${i}`}>
+              <button className="task-emoji gift-icon-btn" onClick={() => setIconFor(i)} aria-label="그림 바꾸기" data-testid={`gift-icon-${i}`}>
+                {r.icon}
+              </button>
               <div className="grow">
                 <label>
                   이름
                   <input
                     className="field"
                     value={r.name}
-                    maxLength={16}
-                    onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, name: e.target.value } : y)))}
+                    maxLength={GIFT_NAME_MAX}
+                    placeholder="예: 놀이터 30분"
+                    onChange={(e) => edit(i, { name: e.target.value })}
                     data-testid={`gift-name-${i}`}
                   />
                 </label>
@@ -599,16 +622,30 @@ export function GiftManage() {
                       className="field"
                       inputMode="numeric"
                       value={r.price}
-                      onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, price: e.target.value.replace(/[^0-9]/g, "") } : y)))}
+                      onChange={(e) => edit(i, { price: e.target.value.replace(/[^0-9]/g, "") })}
                       data-testid={`gift-price-${i}`}
                     />
                     코인
                   </span>
                 </label>
               </div>
+              {rows.length > 1 && (
+                <button className="pick-remove gift-remove" onClick={() => remove(i)} aria-label={`${r.name || "선물"} 지우기`} data-testid={`gift-remove-${i}`}>
+                  ✕
+                </button>
+              )}
             </div>
           );
         })}
+        {rows.length < GIFT_LIMIT ? (
+          <button className="menu-wide" onClick={add} data-testid="gift-add">
+            <span>＋</span>
+            <b>선물 추가하기</b>
+            <small>{rows.length} / {GIFT_LIMIT}개</small>
+          </button>
+        ) : (
+          <p className="hint">선물은 {GIFT_LIMIT}개까지 둘 수 있어요.</p>
+        )}
         <p className={msg === "저장했어요" ? "hint ok" : "error"} data-testid="gift-msg">
           {msg}
         </p>
@@ -618,6 +655,28 @@ export function GiftManage() {
           저장
         </button>
       </div>
+
+      {iconFor !== null && (
+        <Modal onClose={() => setIconFor(null)} testId="gift-icon-picker">
+          <h2>선물 그림을 골라요</h2>
+          <div className="icon-grid">
+            {GIFT_ICONS.map((ic, k) => (
+              <button
+                key={ic}
+                className={rows[iconFor]?.icon === ic ? "on" : ""}
+                onClick={() => {
+                  edit(iconFor, { icon: ic });
+                  setIconFor(null);
+                }}
+                aria-label={`그림 ${k + 1}`}
+                data-testid={`gift-icon-pick-${k}`}
+              >
+                {ic}
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
     </section>
   );
 }

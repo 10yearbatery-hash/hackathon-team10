@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { emptyState, missionDef, type AppState } from "./model";
+import { emptyState, GIFT_LIMIT, missionDef, upgradeState, type AppState } from "./model";
 import {
   addCustomMission,
   buyGift,
@@ -258,5 +258,47 @@ describe("부모가 직접 만드는 미션 (ADR-018)", () => {
     delete old.customMissions;
     expect(addCustomMission(old, { id: "c-1", name: "물 마시기", icon: "🥛", kind: "photo" }).ok).toBe(true);
     expect(removeCustomMission(old, "c-1")).toBe(old);
+  });
+});
+
+describe("선물 추가·삭제와 10코인 선물 (ADR-019)", () => {
+  it("처음부터 10코인 선물이 있어 첫 미션 하나로 살 수 있다", () => {
+    const s = submitProof(setup(), { id: "p1", missionId: "brush", now: DAY1 }).state;
+    expect(s.gifts.find((g) => g.id === "g-hug")?.price).toBe(10);
+    expect(buyGift(s, { id: "b1", giftId: "g-hug", now: DAY1 }).ok).toBe(true);
+  });
+
+  it("예전 상태에는 10코인 선물을 한 번만 넣고, 부모가 지운 뒤에는 다시 넣지 않는다", () => {
+    const old = { ...setup(), gifts: setup().gifts.filter((g) => g.id !== "g-hug") } as AppState;
+    delete old.giftSeed;
+    const up = upgradeState(old);
+    expect(up.gifts.filter((g) => g.id === "g-hug")).toHaveLength(1);
+    const removed = saveGifts(up, up.gifts.filter((g) => g.id !== "g-hug"));
+    expect(upgradeState(removed)).toBe(removed);
+  });
+
+  it("선물을 더하고 지우고 그림을 바꾼다", () => {
+    const s = setup();
+    const added = saveGifts(s, [...s.gifts, { id: "g-new", name: " 놀이터 30분 ", price: 30, icon: "🚲" }]);
+    expect(added.gifts.at(-1)).toEqual({ id: "g-new", name: "놀이터 30분", icon: "🚲", price: 30 });
+    const removed = saveGifts(added, added.gifts.filter((g) => g.id !== "g-movie"));
+    expect(removed.gifts.some((g) => g.id === "g-movie")).toBe(false);
+    expect(saveGifts(s, [{ id: "g-movie", name: "영화", price: 50, icon: "없는그림" }]).gifts[0].icon).toBe("🎬");
+  });
+
+  it("빈 목록, 한도 초과, 같은 id는 저장하지 않는다", () => {
+    const s = setup();
+    expect(saveGifts(s, [])).toBe(s);
+    const many = Array.from({ length: GIFT_LIMIT + 1 }, (_, i) => ({ id: `g${i}`, name: `선물${i}`, price: 10 }));
+    expect(saveGifts(s, many)).toBe(s);
+    expect(saveGifts(s, [{ id: "a", name: "가", price: 10 }, { id: "a", name: "나", price: 10 }])).toBe(s);
+  });
+
+  it("선물을 지워도 이미 산 기록은 남는다", () => {
+    let s = submitProof(setup(), { id: "p1", missionId: "brush", now: DAY1 }).state;
+    s = buyGift(s, { id: "b1", giftId: "g-hug", now: DAY1 }).state;
+    const removed = saveGifts(s, s.gifts.filter((g) => g.id !== "g-hug"));
+    expect(removed.purchases).toHaveLength(1);
+    expect(removed.purchases[0].name).toBe("꼭 안아 주기");
   });
 });
