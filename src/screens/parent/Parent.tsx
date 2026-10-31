@@ -500,7 +500,7 @@ export function Subscribe() {
               </li>
             </ul>
             <p className="sub-price">
-              월 <b>____</b> 원 <small>(가격 미정)</small>
+              월 <b>9,900</b>원
             </p>
             <button className="btn btn-purple btn-lg" onClick={() => setStep("pay")} data-testid="sub-start">
               구독하기
@@ -518,7 +518,7 @@ export function Subscribe() {
             </div>
             <div className="row between pay-line">
               <span>결제 금액</span>
-              <b>월 ____ 원</b>
+              <b>월 9,900원</b>
             </div>
             <button
               className="btn btn-purple btn-lg"
