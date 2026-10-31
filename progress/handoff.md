@@ -28,6 +28,11 @@
 3. 오프라인 시연이 필요하면 Jua 글꼴을 `public/`에 넣는다 (지금은 Google Fonts).
 4. 실패 안내(C8)의 "N단계 → N-1단계" 표시는 ADR-010의 "내려가지 않는 경우"에도 같은 문구가 나온다. 미션 여러 개를 시연할 거면 고친다.
 
+## 배포
+
+- 공개 주소: https://penguin-adventure-two.vercel.app (Vercel 프로젝트 `penguin-adventure`, 계정 smkim663927-beep, 2026-11-01 배포)
+- 다시 배포: `npm run build` → `dist` 내용을 `D:\claude-tmp\penguin-adventure`(Vercel 연결 정보 `.vercel` 있음)에 복사 → 그 폴더에서 `npx vercel deploy --prod --yes`. C 드라이브가 꽉 차서 npm 캐시는 `npm_config_cache=D:\npm-cache`로 돌렸다.
+
 ## 주의할 점
 
 - 저장소 루트의 `남자펭귄.mp4`, `납치.mp4`는 커밋하지 않았다. `납치.mp4`는 온보딩 영상으로 쓰고 있다. `남자펭귄.mp4`는 아직 쓰지 않는다.

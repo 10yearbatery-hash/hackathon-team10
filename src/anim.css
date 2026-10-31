@@ -175,24 +175,6 @@
   }
 }
 
-.splash-logo {
-  position: absolute;
-  bottom: 14%;
-  font-family: var(--jua);
-  font-size: 40px;
-  color: #fff;
-  letter-spacing: -0.5px;
-  text-shadow: 0 3px 0 rgba(20, 80, 150, 0.35);
-  animation: logo-in 0.6s cubic-bezier(0.2, 1.5, 0.4, 1) 0.55s both;
-}
-
-@keyframes logo-in {
-  from {
-    transform: translateY(26px) scale(0.8);
-    opacity: 0;
-  }
-}
-
 /* 펭귄 자리에서 하얀 원이 바깥으로 퍼진다 */
 .splash-burst {
   position: absolute;
@@ -213,10 +195,6 @@
 
 .splash-close .splash-stage {
   animation: leap-out 0.4s cubic-bezier(0.3, 0, 0.7, 0.4) forwards;
-}
-
-.splash-close .splash-logo {
-  animation: fade-out 0.3s forwards;
 }
 
 @keyframes burst {
@@ -536,7 +514,6 @@
   .actor-body img,
   .actor-shadow,
   .welcome-hero,
-  .splash-logo,
   .splash-stage {
     animation: none !important;
   }

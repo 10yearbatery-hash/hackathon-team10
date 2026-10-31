@@ -178,3 +178,37 @@ describe("미션 관리와 구독 (R-14)", () => {
     expect(saveMissions(s, [{ id: "wash", seconds: 20 }]).missions).toEqual([{ id: "wash", seconds: 20 }]);
   });
 });
+
+describe("온보딩 연습 미션 (ADR-014)", () => {
+  it("연습 미션은 코인 10을 주지만 단계를 올리지 않고, 1일 미션은 그대로 할 수 있다", () => {
+    const r = submitProof(setup(), { id: "t1", missionId: "brush", now: DAY1, practice: true });
+    expect(r.climbed).toBe(false);
+    expect(r.state.stage).toBe(1);
+    expect(coins(r.state)).toBe(10);
+    expect(isResting(r.state, DAY1)).toBe(false);
+    expect(cardStatus(r.state, "brush")).toBe("todo");
+    expect(pendingProofs(r.state)).toHaveLength(1);
+    const day1 = submitProof(r.state, { id: "p1", missionId: "brush", now: DAY1 });
+    expect(day1.climbed).toBe(true);
+    expect(day1.state.stage).toBe(2);
+    expect(coins(day1.state)).toBe(20);
+  });
+
+  it("연습 미션이 실패해도 단계는 그대로이고 코인만 돌려받는다", () => {
+    const s = submitProof(setup(), { id: "t1", missionId: "brush", now: DAY1, practice: true }).state;
+    const failed = reviewProof(s, "t1", "fail");
+    expect(failed.stage).toBe(1);
+    expect(coins(failed)).toBe(0);
+    expect(failed.proofs[0].dropped).toBe(false);
+    expect(cardStatus(failed, "brush")).toBe("todo");
+  });
+
+  it("1일 미션을 깨고 올라간 뒤 실패하면 한 단계 내려온다", () => {
+    let s = submitProof(setup(), { id: "t1", missionId: "brush", now: DAY1, practice: true }).state;
+    s = submitProof(s, { id: "p1", missionId: "brush", now: DAY1 }).state;
+    const failed = reviewProof(s, "p1", "fail");
+    expect(failed.stage).toBe(1);
+    expect(failed.proofs.find((p) => p.id === "p1")?.dropped).toBe(true);
+    expect(cardStatus(failed, "brush")).toBe("retry");
+  });
+});

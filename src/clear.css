@@ -1,0 +1,605 @@
+/* 미션 클리어 연출 (C4 + C5). 참고: 미션클리어.mp4
+   무대(.clear-stage)는 360 x 440 고정 좌표. 펭귄 가운데 (180, 290), 머리 위 (180, 150). */
+
+.clear-show {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 40%, #fffdf6 0%, #fff1d6 55%, #fbe2b4 100%);
+}
+
+/* 펭귄 뒤에서 천천히 도는 햇살 */
+.clear-light {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: 900px;
+  height: 900px;
+  margin: -450px 0 0 -450px;
+  background: repeating-conic-gradient(rgba(255, 214, 120, 0.22) 0 10deg, rgba(255, 255, 255, 0) 10deg 22deg);
+  border-radius: 50%;
+  mask: radial-gradient(circle, #000 0 30%, transparent 62%);
+  -webkit-mask: radial-gradient(circle, #000 0 30%, transparent 62%);
+  animation: rays 14s linear infinite, fade-in-soft 0.8s both;
+}
+
+@keyframes rays {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fade-in-soft {
+  from {
+    opacity: 0;
+  }
+}
+
+.clear-chip {
+  position: absolute;
+  top: max(18px, env(safe-area-inset-top));
+  right: 20px;
+  z-index: 8;
+}
+
+.clear-chip .v3-coin {
+  box-shadow: 0 4px 12px rgba(180, 130, 20, 0.18);
+}
+
+.clear-chip .v3-coin.filling {
+  animation: chip-pulse 0.18s ease-out 6 alternate;
+}
+
+@keyframes chip-pulse {
+  to {
+    transform: scale(1.18);
+  }
+}
+
+.clear-stage {
+  position: absolute;
+  left: 50%;
+  top: calc(max(10px, env(safe-area-inset-top)) + 64px);
+  width: 360px;
+  height: 440px;
+  margin-left: -180px;
+}
+
+/* ---------- 펭귄 ---------- */
+.clear-hero {
+  position: absolute;
+  left: 95px;
+  top: 170px;
+  z-index: 3;
+}
+
+.actor-land .actor-move {
+  animation: land-move 0.8s both;
+}
+
+.actor-land .actor-body {
+  animation: land-body 0.8s both, idle-body 3.6s 0.8s infinite;
+}
+
+.actor-land .actor-shadow {
+  animation: land-shadow 0.8s both;
+}
+
+@keyframes land-move {
+  0% {
+    transform: translateY(-90%);
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.4);
+  }
+  10% {
+    opacity: 1;
+  }
+  45%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes land-body {
+  0% {
+    transform: scale(0.88, 1.15);
+  }
+  45% {
+    transform: scale(1.24, 0.76);
+  }
+  58% {
+    transform: scale(0.92, 1.1);
+  }
+  72% {
+    transform: scale(1.04, 0.96);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes land-shadow {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  45% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 신나서 연달아 깡충 (기쁨 깡충 1.1초를 되풀이) */
+.actor-party .actor-move {
+  animation: cheer-move 1.1s infinite;
+}
+
+.actor-party .actor-body {
+  animation: cheer-body 1.1s infinite;
+}
+
+.actor-party .actor-shadow {
+  animation: cheer-shadow 1.1s infinite;
+}
+
+/* ---------- 금빛 반짝이 고리 ---------- */
+.spark-ring {
+  position: absolute;
+  left: 180px;
+  top: 290px;
+  width: 0;
+  height: 0;
+  z-index: 4;
+  animation: ring-spin 3.2s linear infinite, ring-in 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.spark-ring span {
+  position: absolute;
+  left: -9px;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  font-size: 18px;
+  color: #ffc93c;
+  text-shadow: 0 0 6px rgba(255, 220, 120, 0.9);
+}
+
+.spark-ring span::after {
+  content: "✦";
+  display: block;
+  animation: twinkle 0.6s ease-in-out infinite alternate;
+  animation-delay: inherit;
+}
+
+.spark-ring span {
+  color: transparent;
+  text-shadow: none;
+}
+
+.spark-ring span::after {
+  color: #ffbf1f;
+  font-size: 28px;
+  text-shadow: 0 0 10px rgba(255, 210, 90, 1), 0 0 2px #fff;
+}
+
+.spark-ring span:nth-child(even)::after {
+  color: #ffe58a;
+  font-size: 18px;
+}
+
+@keyframes ring-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes ring-in {
+  from {
+    scale: 0.3;
+    opacity: 0;
+  }
+}
+
+@keyframes twinkle {
+  from {
+    transform: scale(0.5);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1.25);
+    opacity: 1;
+  }
+}
+
+.beat-3 .spark-ring,
+.beat-4 .spark-ring {
+  opacity: 0;
+  scale: 1.6;
+  transition: opacity 0.4s, scale 0.4s;
+}
+
+/* ---------- +10 ---------- */
+.plus-ten {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 84px;
+  z-index: 5;
+  text-align: center;
+  font-family: var(--jua);
+  font-size: 66px;
+  line-height: 1;
+  color: #6cd63e;
+  -webkit-text-stroke: 3px #2d7d16;
+  text-shadow: 0 5px 0 #2d7d16, 0 0 22px rgba(255, 230, 120, 0.9);
+  animation: plus-pop 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+
+.plus-ten::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 236, 140, 0.95), rgba(255, 236, 140, 0));
+  z-index: -1;
+  animation: flash 0.7s ease-out both;
+}
+
+@keyframes plus-pop {
+  from {
+    transform: translateY(60px) scale(0.2);
+    opacity: 0;
+  }
+}
+
+@keyframes flash {
+  from {
+    transform: scale(0.2);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.beat-3 .plus-ten,
+.beat-4 .plus-ten {
+  animation: plus-out 0.5s ease-in forwards;
+}
+
+@keyframes plus-out {
+  to {
+    transform: translateY(-40px) scale(0.7);
+    opacity: 0;
+  }
+}
+
+/* ---------- 동전 분수 ---------- */
+.coin-fountain {
+  position: absolute;
+  left: 180px;
+  top: 150px;
+  width: 0;
+  height: 0;
+  z-index: 6;
+}
+
+.cf-x,
+.cf-y {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* 가로는 일정하게, 세로는 중력처럼: 올라갈 때 ease-out, 떨어질 때 ease-in, 바닥에서 통 튐 */
+.cf-x {
+  animation: cf-x 1.15s linear both;
+}
+
+.cf-y {
+  animation: cf-y 1.15s both;
+}
+
+@keyframes cf-x {
+  from {
+    transform: translateX(0);
+  }
+  75%,
+  to {
+    transform: translateX(var(--x));
+  }
+}
+
+@keyframes cf-y {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1);
+  }
+  35% {
+    transform: translateY(var(--peak));
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.5);
+  }
+  75% {
+    transform: translateY(var(--floor));
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1);
+  }
+  86% {
+    transform: translateY(calc(var(--floor) - 18px));
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.5);
+  }
+  100% {
+    transform: translateY(var(--floor));
+  }
+}
+
+.cf-coin {
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff6b0 0 18%, #ffd23f 19% 55%, #e9a400 56% 70%, #ffcf3a 71%);
+  box-shadow: inset 0 0 0 2px #c98a00, 0 2px 0 #b07800;
+  animation: coin-spin 0.45s linear infinite;
+}
+
+@keyframes coin-spin {
+  50% {
+    transform: scaleX(0.15);
+  }
+}
+
+/* 바닥의 동전이 차례로 코인 칩으로 날아간다 */
+.collect .cf-x {
+  animation: cf-collect-x 0.6s cubic-bezier(0.5, 0, 0.9, 0.6) both;
+  animation-delay: calc(var(--i) * 0.07s) !important;
+}
+
+.collect .cf-y {
+  animation: cf-collect-y 0.6s cubic-bezier(0.3, -0.4, 0.8, 0.6) both;
+  animation-delay: calc(var(--i) * 0.07s) !important;
+}
+
+.collect .cf-coin {
+  animation: coin-spin 0.3s linear infinite, coin-shrink 0.6s ease-in both;
+  animation-delay: 0s, calc(var(--i) * 0.07s);
+}
+
+@keyframes cf-collect-x {
+  from {
+    transform: translateX(var(--x));
+  }
+  to {
+    transform: translateX(var(--chip-x));
+  }
+}
+
+@keyframes cf-collect-y {
+  from {
+    transform: translateY(var(--floor));
+  }
+  to {
+    transform: translateY(var(--chip-y));
+  }
+}
+
+@keyframes coin-shrink {
+  90% {
+    opacity: 1;
+  }
+  to {
+    scale: 0.45;
+    opacity: 0;
+  }
+}
+
+/* ---------- 폭죽과 색종이 ---------- */
+.fireworks {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.fw {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.fw::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 14px 6px var(--c);
+  opacity: 0;
+  animation: fw-flash 0.5s ease-out both;
+  animation-delay: inherit;
+}
+
+.fw i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+
+.fw b {
+  position: absolute;
+  left: -2px;
+  top: -30px;
+  width: 4px;
+  height: 22px;
+  border-radius: 3px;
+  background: linear-gradient(var(--c), rgba(255, 255, 255, 0));
+  transform-origin: 50% 100%;
+  opacity: 0;
+  animation: fw-ray 1.3s cubic-bezier(0.1, 0.8, 0.3, 1) both;
+}
+
+.fw i:nth-child(odd) b {
+  height: 14px;
+  background: var(--c);
+  border-radius: 50%;
+  width: 6px;
+  left: -3px;
+}
+
+@keyframes fw-ray {
+  0% {
+    transform: translateY(26px) scaleY(0.2);
+    opacity: 1;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-34px) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes fw-flash {
+  0% {
+    transform: scale(0.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.confetti-rain {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.confetti-rain i {
+  position: absolute;
+  top: -20px;
+  border-radius: 2px;
+  animation: confetti-fall linear both;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translate(0, 0) rotate(0);
+  }
+  25% {
+    transform: translate(14px, 25vh) rotate(160deg);
+  }
+  50% {
+    transform: translate(-10px, 50vh) rotate(320deg);
+  }
+  75% {
+    transform: translate(12px, 75vh) rotate(480deg);
+  }
+  100% {
+    transform: translate(-6px, 105vh) rotate(640deg);
+  }
+}
+
+/* ---------- 금별 ---------- */
+.gold-star {
+  position: absolute;
+  left: 150px;
+  top: 76px;
+  width: 60px;
+  height: 60px;
+  z-index: 6;
+  animation: star-pop 0.7s cubic-bezier(0.2, 1.7, 0.4, 1) both;
+}
+
+.gold-star img {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  filter: drop-shadow(0 0 10px rgba(255, 200, 60, 0.9));
+  animation: star-bob 1.6s ease-in-out 0.7s infinite;
+}
+
+.star-rays {
+  position: absolute;
+  left: -40px;
+  top: -40px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 220, 90, 0.55) 0 8deg, rgba(255, 220, 90, 0) 8deg 30deg);
+  mask: radial-gradient(circle, #000 0 22%, transparent 70%);
+  -webkit-mask: radial-gradient(circle, #000 0 22%, transparent 70%);
+  animation: rays 5s linear infinite;
+}
+
+@keyframes star-pop {
+  from {
+    transform: translateY(40px) scale(0) rotate(-120deg);
+  }
+}
+
+@keyframes star-bob {
+  50% {
+    transform: translateY(-6px) rotate(8deg);
+  }
+}
+
+/* ---------- 아래 카드 ---------- */
+.clear-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9;
+  padding: 22px 22px max(20px, env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -10px 30px rgba(170, 120, 30, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transform: translateY(110%);
+  transition: transform 0.55s cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+
+.clear-panel.show {
+  transform: translateY(0);
+}
+
+.clear-panel .v3-title {
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+.clear-panel .btn {
+  width: 100%;
+  margin-top: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clear-light,
+  .spark-ring,
+  .confetti-rain,
+  .fireworks {
+    display: none;
+  }
+}

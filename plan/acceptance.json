@@ -51,8 +51,8 @@
           "id": "1.6",
           "text": "상점에서 코인이 모자란 선물을 누르면 '코인이 부족합니다'가 나오고, 충분하면 사서 코인이 바로 빠진다 (F-26, F-27)",
           "passes": true,
-          "evidence": "e2e: buy-short '코인이 조금 더 필요해', 가격 10으로 바꾼 뒤 buy-done, wallet 0. 스크린샷 c9-shop, c10-short",
-          "notes": "ADR-013으로 부족 팝업 문구가 '코인이 조금 더 필요해'로 바뀜"
+          "evidence": "e2e: buy-short '코인이 부족해', 가격 10으로 바꾼 뒤 buy-done '구매해 줘서 고마워!', wallet 0. 스크린샷 c9-shop-welcome, c9-shop, c10-short, c10-done",
+          "notes": "ADR-013으로 부족 팝업 문구가 '코인이 조금 더 필요해'로, ADR-015로 상점이 가게 화면이 되며 '미안… 코인이 부족해ㅜ'로 바뀜"
         },
         {
           "id": "1.7",

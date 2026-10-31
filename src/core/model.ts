@@ -31,6 +31,10 @@ export interface Proof {
   status: ProofStatus;
   /** 실패를 아이가 C8 화면에서 봤는지 */
   failSeen: boolean;
+  /** 온보딩 연습 미션(O8). 단계 진행에는 세지 않는다 (ADR-014) */
+  practice?: boolean;
+  /** 실패 처리로 캐릭터가 실제로 한 단계 내려갔는가 (C8 문구용) */
+  dropped?: boolean;
 }
 
 export interface Gift {

@@ -7,24 +7,49 @@ test("시연 시나리오: 온보딩부터 실패 처리, 미션 관리와 구�
   await expect(page.getByTestId("first-banner")).toBeVisible({ timeout: 6000 });
   await shot(page, "c1-first-banner");
   await page.getByTestId("first-banner-ok").click();
-  await expect(page.getByTestId("stage-1")).toHaveAttribute("data-state", "done");
-  await expect(page.getByTestId("stage-2")).toHaveAttribute("data-state", "rest");
-  await expect(page.getByTestId("path-hero")).toHaveAttribute("data-stage", "2");
+  // 연습 미션은 단계를 올리지 않는다: 1일 발판에 그대로 서 있고 바로 미션을 할 수 있다 (ADR-014)
+  await expect(page.getByTestId("stage-1")).toHaveAttribute("data-state", "now");
+  await expect(page.getByTestId("path-hero")).toHaveAttribute("data-stage", "1");
   await expect(page.getByTestId("coin-chip")).toHaveText("10");
-  await expect(page.getByTestId("castle-left")).toContainText("98칸");
-  await shot(page, "c1-home-rest");
+  await expect(page.getByTestId("castle-left")).toContainText("99칸");
   await page.getByTestId("stage-3").click();
   await expect(page.getByTestId("toast")).toHaveText("아직 열리지 않았어!");
 
+  // 1일 미션을 혼자 해서 2일로 올라간다
+  await page.getByTestId("stage-1").click();
+  await expect(page.getByTestId("mission-brush")).toHaveAttribute("data-status", "todo");
+  await shot(page, "c2-day1");
+  await page.getByTestId("go-brush").click();
+  await page.getByTestId("shoot").click();
+  await expect(page.getByTestId("submit")).toBeEnabled({ timeout: 12_000 });
+  await page.getByTestId("submit").click();
+  await expect(page.getByTestId("clear-ok")).toBeEnabled({ timeout: 8000 });
+  await shot(page, "c4-clear-panel");
+  await page.getByTestId("clear-ok").click();
+  await expect(page.getByTestId("path-hero")).toHaveAttribute("data-stage", "2", { timeout: 4000 });
+  await expect(page.getByTestId("stage-1")).toHaveAttribute("data-state", "done");
+  await expect(page.getByTestId("stage-2")).toHaveAttribute("data-state", "rest");
+  await expect(page.getByTestId("coin-chip")).toHaveText("20");
+  await expect(page.getByTestId("castle-left")).toContainText("98칸");
+  await shot(page, "c1-home-rest");
+
   // 7. 상점에서 코인 부족
   await page.getByTestId("tab-shop").click();
-  await expect(page.getByTestId("screen-shop")).toBeVisible();
-  await expect(page.getByText("하늘이의 코인")).toBeVisible();
+  await expect(page.getByTestId("shop-welcome")).toContainText("안녕~ 뭐 사러 왔어?");
+  await expect(page.getByTestId("wallet")).toContainText("20 코인");
+  await shot(page, "c9-shop-welcome");
+  await page.getByTestId("shop-browse").click();
+  await expect(page.getByTestId("shop-list")).toBeVisible();
   await shot(page, "c9-shop");
   await page.getByTestId("gift-g-movie").click();
-  await expect(page.getByTestId("buy-short")).toContainText("코인이 조금 더 필요해");
+  await expect(page.getByTestId("buy-short")).toContainText("코인이 부족해");
+  await expect(page.getByTestId("need-more")).toHaveText("30코인");
   await shot(page, "c10-short");
+  await page.getByTestId("short-list").click();
+  await expect(page.getByTestId("shop-list")).toBeVisible();
+  await page.getByTestId("gift-g-movie").click();
   await page.getByTestId("short-ok").click();
+  await expect(page.getByTestId("tab-parent")).toBeVisible();
 
   // 8. 부모 탭, PIN, 인증 확인에서 실패
   await page.getByTestId("tab-parent").click();
@@ -33,12 +58,14 @@ test("시연 시나리오: 온보딩부터 실패 처리, 미션 관리와 구�
   await shot(page, "p1-pin-wrong");
   await pin(page, "1234");
   await expect(page.getByTestId("screen-parent-home")).toBeVisible();
-  await expect(page.getByTestId("task-proofs")).toContainText("확인할 인증 1건");
+  await expect(page.getByTestId("task-proofs")).toContainText("확인할 인증 2건");
   await expect(page.getByTestId("task-proofs")).toContainText("양치하기");
   await shot(page, "p2-parent-home");
   await page.getByTestId("go-review").click();
   await expect(page.getByTestId("proof-media")).toBeVisible();
-  await expect(page.getByTestId("review-count")).toHaveText("1/1");
+  await expect(page.getByTestId("review-count")).toHaveText("1/2");
+  await page.getByTestId("ok").click();
+  await expect(page.getByTestId("review-count")).toHaveText("2/2");
   await shot(page, "p3-review");
   await page.getByTestId("fail").click();
   await expect(page.getByTestId("fail-confirm")).toBeVisible();
@@ -51,8 +78,9 @@ test("시연 시나리오: 온보딩부터 실패 처리, 미션 관리와 구�
   await expect(page.getByTestId("retry-screen")).toBeVisible();
   await expect(page.getByTestId("retry-coins")).toHaveText("-10");
   await shot(page, "c8-retry");
+  await expect(page.getByTestId("retry-screen")).toContainText("2단계 → 1단계");
   await page.getByTestId("retry-later").click();
-  await expect(page.getByTestId("coin-chip")).toHaveText("0");
+  await expect(page.getByTestId("coin-chip")).toHaveText("10");
   await expect(page.getByTestId("stage-1")).toHaveAttribute("data-state", "now");
   await page.getByTestId("stage-1").click();
   await expect(page.getByTestId("mission-brush")).toHaveAttribute("data-status", "retry");
@@ -98,11 +126,15 @@ test("다시 찍어서 클리어하고, 코인으로 선물을 사고 부모가 
   await page.getByTestId("back").click();
   await page.getByTestId("to-kid").click();
   await page.getByTestId("tab-shop").click();
+  await page.getByTestId("shop-browse").click();
   await page.getByTestId("gift-g-movie").click();
   await page.getByTestId("buy-ok").click();
-  await expect(page.getByTestId("buy-done")).toContainText("주문했어요!");
+  await expect(page.getByTestId("buy-done")).toContainText("구매해 줘서 고마워!");
+  await expect(page.getByTestId("wallet")).toContainText("0 코인");
+  await shot(page, "c10-done");
   await page.getByTestId("done-ok").click();
-  await expect(page.getByTestId("wallet")).toContainText("0");
+  await expect(page.getByTestId("shop-list")).toBeVisible();
+  await page.getByTestId("shop-back").click();
 
   // 부모가 실패를 누르면 코인은 마이너스가 될 수 있다 (R-09)
   await page.getByTestId("tab-parent").click();
