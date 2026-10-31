@@ -36,7 +36,7 @@ test("시연 시나리오: 온보딩부터 실패 처리, 미션 관리와 구�
   // 7. 상점에서 코인 부족
   await page.getByTestId("tab-shop").click();
   await expect(page.getByTestId("shop-welcome")).toContainText("안녕~ 뭐 사러 왔어?");
-  await expect(page.getByTestId("wallet")).toContainText("20 코인");
+  await expect(page.getByTestId("wallet")).toHaveText("20");
   await shot(page, "c9-shop-welcome");
   await page.getByTestId("shop-browse").click();
   await expect(page.getByTestId("shop-list")).toBeVisible();
@@ -137,7 +137,7 @@ test("다시 찍어서 클리어하고, 코인으로 선물을 사고 부모가 
   await page.getByTestId("gift-g-movie").click();
   await page.getByTestId("buy-ok").click();
   await expect(page.getByTestId("buy-done")).toContainText("구매해 줘서 고마워!");
-  await expect(page.getByTestId("wallet")).toContainText("0 코인");
+  await expect(page.getByTestId("wallet")).toHaveText("0");
   await shot(page, "c10-done");
   await page.getByTestId("done-ok").click();
   await expect(page.getByTestId("shop-list")).toBeVisible();

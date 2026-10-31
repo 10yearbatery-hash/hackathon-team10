@@ -23,10 +23,12 @@ const GIFT_DESC: Record<string, string> = {
 
 const STRIPES = Array.from({ length: 12 }, (_, i) => i);
 
+/** 홈 위쪽 코인(.coin-pill)과 같은 모양 */
 function ShopCoin({ value }: { value: number }) {
   return (
-    <span className="shop-coin" data-testid="wallet">
-      <i aria-hidden="true">●</i> {value.toLocaleString("ko-KR")} 코인
+    <span className="coin-pill" data-testid="wallet" aria-label={`코인 ${value}개`}>
+      <i aria-hidden="true" />
+      {value.toLocaleString("ko-KR")}
     </span>
   );
 }
