@@ -1,0 +1,26 @@
+Use your image generation tool. Two reference images are attached: (1) ref.png, the original pink penguin; (2) sheet1_body.png, a parts sheet of the same penguin's body parts.
+
+Create ONE new image: a second parts sheet with the FACE parts of this same penguin, at the correct scale for the head base in sheet1_body.png.
+
+SCALE (very important): measure the head base width in sheet1_body.png. Each eye white must be about 28% of that head width. Each pupil must be about 55% of an eye white's width. The upper beak must be about 30% of the head width. The face parts are therefore SMALL on the canvas, with lots of empty green space. Do not enlarge them.
+
+Parts to include (8 parts, left/right as seen on screen):
+1. Left eye white: the white eye shape with its dark outline and its eyelashes, with NO iris and NO pupil. Empty white inside.
+2. Right eye white: same, for the right eye.
+3. Left pupil: the pink-magenta iris ring with the black pupil and the white highlight dot, as ONE round piece.
+4. Right pupil: same, for the right eye.
+5. Left eyebrow: the dark curved eyebrow.
+6. Right eyebrow: same.
+7. Upper beak: the orange upper half of the open beak.
+8. Lower beak: the orange lower half of the open beak, including the pink inside of the mouth.
+
+Rules:
+- Background: one flat pure green color (#00FF00). No gradient, no shadow, no floor, no glow.
+- Parts must NOT touch or overlap each other. Leave wide empty gaps between all parts.
+- Draw every part at the SAME SCALE as it appears in the reference image. Do NOT enlarge parts to fill the canvas. Leave a lot of empty green space.
+- Same art style, same colors and same outline thickness as the reference. Keep the dark outline on every part.
+- Every part is drawn complete, including areas that were hidden behind other parts in the reference.
+- No text, no labels, no numbers, no arrows.
+- Square 1:1 canvas, high resolution.
+
+After generating, save the final image into the current working directory as sheet2_face.png (copy it from wherever the tool stores it). Do not change or create any other files. Reply with only the saved file path and a one-line list of the parts visible in the image.

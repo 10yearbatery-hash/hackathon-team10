@@ -1,0 +1,26 @@
+Use your image generation tool. Two reference images are attached: (1) ref.png, the original white fox; (2) sheetA_core.png, a parts sheet of the same fox's core parts.
+
+Create ONE new image: sheet C with the FACE parts of this same fox, at the correct scale for the head base in sheetA_core.png. Redraw them FRONT-FACING and SYMMETRICAL, keeping the same sly, playful (not scary) expression style.
+
+SCALE (very important): measure the head base width in sheetA_core.png. Each eye white must be about 22% of that head width. Each iris must be about 55% of an eye white's width. The nose must be about 10% of the head width and the mouth about 30%. The face parts are therefore SMALL on the canvas, with lots of empty green space. Do not enlarge them.
+
+Parts to include (8 parts, left/right as seen on screen):
+1. Left eye white: the almond-shaped white eye with its dark outline and eyelid line, with NO iris. Empty white inside.
+2. Right eye white: same.
+3. Left iris: the orange iris with the black pupil and the white highlight dot, as ONE round piece.
+4. Right iris: same.
+5. Left eyebrow: the thick dark angled eyebrow.
+6. Right eyebrow: same, mirrored.
+7. Nose: the small black rounded nose.
+8. Mouth: the open smirking mouth with the pink tongue, complete.
+
+Rules:
+- Background: one flat pure green color (#00FF00). No gradient, no shadow, no floor, no glow.
+- Parts must NOT touch or overlap each other. Leave wide empty gaps between all parts.
+- Draw every part at the SAME SCALE as it appears in the reference image. Do NOT enlarge parts to fill the canvas. Leave a lot of empty green space.
+- Same art style, same colors and same outline thickness as the reference. Keep the dark outline on every part.
+- Every part is drawn complete, including areas that were hidden behind other parts in the reference.
+- No text, no labels, no numbers, no arrows.
+- Square 1:1 canvas, high resolution.
+
+After generating, save the final image into the current working directory as sheetC_face.png (copy it from wherever the tool stores it). Do not change or create any other files. Reply with only the saved file path and a one-line list of the parts visible in the image.

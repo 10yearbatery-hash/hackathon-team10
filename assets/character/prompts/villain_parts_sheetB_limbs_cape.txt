@@ -1,0 +1,21 @@
+Use your image generation tool. Two reference images are attached: (1) ref.png, the original white fox with a purple cape; (2) sheetA_core.png, a parts sheet of the same fox's core parts.
+
+Create ONE new image: sheet B with the limbs and the cape of this same fox, at the same scale as in sheetA_core.png (the torso in sheetA_core.png is the scale reference). Draw them in a relaxed neutral standing pose, front view, same art style.
+
+Parts to include (5 parts, left/right as seen on screen):
+1. Left arm: the white arm with a small fist, hanging relaxed, complete including the shoulder end hidden under fur or cape.
+2. Right arm: same, for the right side.
+3. Left leg: the white leg with the paw, complete including the hip end.
+4. Right leg: same, for the right side.
+5. Cape: the purple cape with its high collar and the darker purple lining, drawn complete and laid out as seen from the front, including the parts normally hidden behind the fox's body.
+
+Rules:
+- Background: one flat pure green color (#00FF00). No gradient, no shadow, no floor, no glow.
+- Parts must NOT touch or overlap each other. Leave wide empty gaps between all parts.
+- Draw every part at the SAME SCALE as it appears in the reference image. Do NOT enlarge parts to fill the canvas. Leave a lot of empty green space.
+- Same art style, same colors and same outline thickness as the reference. Keep the dark outline on every part.
+- Every part is drawn complete, including areas that were hidden behind other parts in the reference.
+- No text, no labels, no numbers, no arrows.
+- Square 1:1 canvas, high resolution.
+
+After generating, save the final image into the current working directory as sheetB_limbs_cape.png (copy it from wherever the tool stores it). Do not change or create any other files. Reply with only the saved file path and a one-line list of the parts visible in the image.

@@ -1,0 +1,22 @@
+Use your image generation tool. The attached reference image (ref.png) is a white fox villain mascot with a purple cape, for a kids' app (cute and playful, not scary). IGNORE the black background of the reference.
+
+Create ONE new image: a "parts sheet" (sheet A, core parts) that disassembles this fox into separate parts, for 2D puppet animation. Redraw the head and torso FRONT-FACING and SYMMETRICAL (neutral standing pose), keeping the same art style.
+
+Parts to include (6 parts, left/right as seen on screen):
+1. Head base: the white fluffy fox head with cheek fur and forehead tuft, with NO eyes, NO eyebrows, NO nose, NO mouth and WITHOUT the ears. Face left blank.
+2. Left ear: white with lavender inside, complete including the part that was hidden inside the head.
+3. Right ear: same.
+4. Torso: chest and belly only, WITHOUT arms, legs, tail and cape. Fully drawn, including parts hidden behind arms and cape.
+5. Tail: the big fluffy white tail, complete.
+6. Clasp: the small round golden orb.
+
+Rules:
+- Background: one flat pure green color (#00FF00). No gradient, no shadow, no floor, no glow.
+- Parts must NOT touch or overlap each other. Leave wide empty gaps between all parts.
+- Draw every part at the SAME SCALE as it appears in the reference image. Do NOT enlarge parts to fill the canvas. Leave a lot of empty green space.
+- Same art style, same colors and same outline thickness as the reference. Keep the dark outline on every part.
+- Every part is drawn complete, including areas that were hidden behind other parts in the reference.
+- No text, no labels, no numbers, no arrows.
+- Square 1:1 canvas, high resolution.
+
+After generating, save the final image into the current working directory as sheetA_core.png (copy it from wherever the tool stores it). Do not change or create any other files. Reply with only the saved file path and a one-line list of the parts visible in the image.

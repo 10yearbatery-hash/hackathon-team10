@@ -1,0 +1,24 @@
+Use your image generation tool. The attached reference image (ref.png) is a cute pink penguin mascot with a pink bow, for a kids' app. IGNORE the black background of the reference.
+
+Create ONE new image: a "parts sheet" that disassembles exactly this penguin into separate parts, for 2D puppet animation (each part will later be moved separately).
+
+Parts to include (8 parts, left/right as seen on screen):
+1. Head base: the pink head with the big white face patch, with NO eyes, NO eyelashes, NO eyebrows, NO beak and NO bow. Where those were, draw plain face color so the face is blank.
+2. Body: the pink torso with the white belly, WITHOUT wings and WITHOUT feet. Fully drawn, including the shoulders hidden behind the wings and the top hidden under the head.
+3. Left wing (the raised one in the reference).
+4. Right wing (the one hanging down).
+5. Left foot (orange).
+6. Right foot (orange).
+7. Head tuft: the pink feathers on top of the head.
+8. Bow: the pink ribbon bow, complete.
+
+Rules:
+- Background: one flat pure green color (#00FF00). No gradient, no shadow, no floor, no glow.
+- Parts must NOT touch or overlap each other. Leave wide empty gaps between all parts.
+- Draw every part at the SAME SCALE as it appears in the reference image. Do NOT enlarge parts to fill the canvas. Leave a lot of empty green space.
+- Same art style, same colors and same outline thickness as the reference. Keep the dark outline on every part.
+- Every part is drawn complete, including areas that were hidden behind other parts in the reference.
+- No text, no labels, no numbers, no arrows.
+- Square 1:1 canvas, high resolution.
+
+After generating, save the final image into the current working directory as sheet1_body.png (copy it from wherever the tool stores it). Do not change or create any other files. Reply with only the saved file path and a one-line list of the parts visible in the image.

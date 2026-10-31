@@ -1,0 +1,25 @@
+Use your image generation tool. Two reference images are attached:
+(1) ref_big.png: the original blue penguin mascot.
+(2) sheet1_body.png: a parts sheet with this penguin's head base (blank face), body, wings, feet and tuft on a green background.
+
+Create ONE new image: a second parts sheet with the FACE parts of this same penguin, drawn so that they fit the head base shown in sheet1_body.png. Use the head base width in sheet1_body.png as the scale reference: if each part were placed on that head base, the face must look like the original penguin in ref_big.png.
+
+Parts to include (8 parts, left/right as seen on screen):
+1. Left eye white: the white eye shape with its dark outline (and eyelid line), with NO iris and NO pupil inside. Completely empty white inside.
+2. Right eye white: same, for the right eye.
+3. Left pupil: the dark blue iris ring with the black pupil and the white highlight dot, as ONE round piece (it will slide around inside the eye white).
+4. Right pupil: same, for the right eye.
+5. Left eyebrow: the dark curved eyebrow.
+6. Right eyebrow: same, for the right eye.
+7. Upper beak: the orange upper half of the open beak.
+8. Lower beak: the orange lower half of the open beak, including the pink inside of the mouth.
+
+Rules:
+- Background: one flat pure green color (#00FF00). No gradient, no shadow, no glow.
+- Parts must NOT touch or overlap each other. Leave wide empty gaps between all parts.
+- Same art style, same colors and same outline thickness as the reference.
+- Every part is drawn complete, from the same front view as the reference.
+- No text, no labels, no numbers, no arrows.
+- Square 1:1 canvas, high resolution.
+
+After generating, save the final image into the current working directory as sheet2_face.png (copy it from wherever the tool stores it). Do not change or create any other files. Reply with only the saved file path and a one-line list of the parts visible in the image.

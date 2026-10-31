@@ -1,0 +1,22 @@
+Use your image generation tool. The attached reference image is a cute blue penguin mascot for a kids' app.
+
+Create ONE new image: a "parts sheet" that disassembles exactly this penguin into separate parts, for 2D puppet animation (each part will later be moved separately).
+
+Parts to include (7 parts, left/right means as seen on screen):
+1. Head base: the blue head with the big white face patch, with NO eyes, NO eyebrows and NO beak. Where those were, draw plain face color (white patch / blue) so the face is blank.
+2. Body: the blue torso with the white belly, WITHOUT the wings and WITHOUT the feet. The body must be fully drawn, including the shoulders that were hidden behind the wings and the top that was hidden under the head.
+3. Left wing (the raised one in the reference), drawn complete.
+4. Right wing (the one hanging down), drawn complete.
+5. Left foot (orange), drawn complete.
+6. Right foot (orange), drawn complete.
+7. Head tuft: the few blue feathers on top of the head, drawn complete.
+
+Rules:
+- Background: one flat pure green color (#00FF00). No gradient, no shadow, no floor, no glow.
+- Parts must NOT touch or overlap each other. Leave wide empty gaps between all parts.
+- Same art style, same colors and same outline thickness as the reference. Keep the dark blue outline on every part.
+- Every part is drawn from the same front view as the reference.
+- No text, no labels, no numbers, no arrows.
+- Square 1:1 canvas, high resolution.
+
+After generating, save the final image into the current working directory as sheet1_body.png (copy it from wherever the tool stored it). Do not change or create any other files. Reply with only the saved file path and a one-line list of the parts visible in the image.
