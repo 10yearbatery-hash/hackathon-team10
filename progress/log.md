@@ -23,3 +23,12 @@
   - 부품 50개의 연두색 잔여 픽셀 0개 측정, 전신 이미지 3개를 두 가지 바탕에서 눈으로 확인
   - Codex 시트 7장은 `CODEX_EXIT=0`과 결과 파일을 확인
 - 남은 일: `progress/handoff.md`의 "다음 세션이 할 일" 참고 (미정 사항 확정, ADR·PRD·아키텍처·Phase 계획 작성)
+
+## 2026-11-01 02:10 · Phase 1 시연 범위 전체 · 대화형 구현
+- 한 일:
+  - React + Vite + TypeScript 프로젝트를 만들고 PRD 필수 기능 전부를 구현 (O1~O9, C1~C10 중 C7 제외, P1~P7)
+  - 피그마 Page 2의 색, 버튼, 코인 칩, 단계 발판, 글꼴, 캐릭터 시트를 적용 (ADR-012)
+  - 분홍 펭귄·여우 원본을 투명 원본으로 교체하고 전신 이미지를 다시 자름
+  - `docs/architecture.md`, `plan/plan.md`, `plan/acceptance.json`, `CLAUDE.md` 명령·규칙 작성, ADR-010·012 추가
+- 검증: `npm run test:unit` 15 통과, `npm run build` 통과, `npx playwright test` 3 통과 (시연 시나리오, 다시 찍기·구매·줬어요, 사진 미션·미션 두 개·초기화). 스크린샷 27장을 열어 확인
+- 남은 일: 실기기 카메라 확인, 배포, 독립 리뷰 (`progress/handoff.md`)

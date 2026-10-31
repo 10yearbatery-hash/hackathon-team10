@@ -1,0 +1,10 @@
+{
+  "name": "펭귄 모험",
+  "short_name": "펭귄 모험",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#dff6ff",
+  "theme_color": "#dff6ff",
+  "icons": [{ "src": "char/hero_cheer.png", "sizes": "387x483", "type": "image/png" }]
+}
