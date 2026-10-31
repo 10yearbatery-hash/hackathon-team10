@@ -77,7 +77,7 @@ export const FREE_STAGE_LIMIT = 20;
 export const VIDEO_SECONDS = { min: 5, max: 30, default: 15 };
 
 export const MISSIONS: MissionDef[] = [
-  { id: "brush", name: "양치하기", icon: "🪥", kind: "video", cheer: "양치하자" },
+  { id: "brush", name: "양치하기", icon: "🦷", kind: "video", cheer: "양치하자" },
   { id: "wash", name: "손씻기", icon: "🧼", kind: "video", cheer: "손 씻자" },
   { id: "vitamin", name: "비타민 먹기", icon: "💊", kind: "photo", cheer: "비타민 먹자" },
   { id: "book", name: "책읽기", icon: "📚", kind: "photo", cheer: "책 읽자" },

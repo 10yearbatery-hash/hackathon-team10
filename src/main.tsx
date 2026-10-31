@@ -6,6 +6,7 @@ import "./v3.css";
 import "./anim.css";
 import "./clear.css";
 import "./shop.css";
+import "./ob.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

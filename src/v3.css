@@ -48,19 +48,25 @@
   height: 31px;
   padding: 0 14px 0 11px;
   border-radius: 16px;
-  background: #ebeef4;
-  border: 1px solid #ccd4e3;
+  /* 상점 코인 알약과 같은 금색 */
+  background: linear-gradient(180deg, #fff3b4 0%, #ffda6a 50%, #e6ae35 100%);
+  border: 2px solid #fff5cb;
+  box-shadow:
+    0 2px 0 rgba(185, 133, 41, 0.6),
+    inset 0 2px 2px rgba(255, 255, 255, 0.7);
   font-weight: 700;
   font-size: 14px;
-  color: #202a3c;
+  color: #815019;
   font-variant-numeric: tabular-nums;
 }
 
+/* 클리어 화면 코인(.cf-coin)과 같은 광택 있는 금색 동전 */
 .coin-pill i {
-  width: 15px;
-  height: 15px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 3px solid #202a3c;
+  background: radial-gradient(circle at 35% 30%, #fff6b0 0 18%, #ffd23f 19% 55%, #e9a400 56% 70%, #ffcf3a 71%);
+  box-shadow: inset 0 0 0 1.5px #c98a00, 0 1px 0 #b07800;
 }
 
 .map-title {
@@ -696,27 +702,65 @@
   padding-left: 6px;
 }
 
+/* 펭귄은 카메라 화면 왼쪽 위에 작은 동그라미로 올리고, 카메라가 화면 대부분을 쓴다 */
 .capture-v3 .watch-panel {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 3;
+  width: 104px;
   margin: 0;
-  height: 26%;
-  min-height: 130px;
-  border-radius: 22px;
-  border: 1px solid var(--v3-line);
-  background: #fff;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  pointer-events: none;
 }
 
 .capture-v3 .watch-say {
-  top: 10px;
-  left: 10px;
-  border-radius: 14px;
-  font-size: 14px;
+  position: relative;
+  left: auto;
+  top: auto;
+  width: max-content;
+  max-width: 190px;
+  border-radius: 14px 14px 14px 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  line-height: 1.35;
   color: var(--v3-blue-dark);
-  white-space: nowrap;
-  box-shadow: 0 3px 10px rgba(22, 104, 166, 0.15);
+  box-shadow: 0 3px 10px rgba(22, 104, 166, 0.2);
+}
+
+.capture-v3 .watch-stage {
+  width: 104px;
+  height: 104px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(22, 104, 166, 0.3);
+}
+
+/* 영상은 1280x720 상반신. 원 안에 얼굴이 들어오도록 위쪽 기준으로 자른다 */
+.capture-v3 .watch-stage video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  object-position: 50% 0%;
 }
 
 .capture-v3 .cam-panel {
-  margin: 10px 0 0;
+  flex: 1;
+  min-height: 320px;
+  margin: 6px 0 0;
   border-radius: 22px;
   background: #fff;
   border: 1px solid var(--v3-line);
@@ -786,10 +830,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* 홈 코인(.coin-pill i)과 같은 광택 있는 금색 동전 */
 .v3-coin i {
-  font-style: normal;
-  color: var(--v3-blue-dark);
-  font-size: 12px;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff6b0 0 18%, #ffd23f 19% 55%, #e9a400 56% 70%, #ffcf3a 71%);
+  box-shadow: inset 0 0 0 1.5px #c98a00, 0 1px 0 #b07800;
 }
 
 .v3-coin b {

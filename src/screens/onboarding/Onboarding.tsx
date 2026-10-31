@@ -7,7 +7,7 @@ import { handoff, update } from "../../app/store";
 import { sfx, unlockSound } from "../../platform/sound";
 import { Icon } from "../../ui/icons";
 import { MAP_W, MapPath, scrollFor, TOTAL_H } from "../../ui/MapPath";
-import { Actor, Hero, nick, PinPad } from "../../ui/parts";
+import { Actor, nick, PinPad } from "../../ui/parts";
 import { msUntilReveal } from "../../ui/Splash";
 
 /** 부모 설정 중인 값. O7에서 한 번에 저장한다 */
@@ -70,7 +70,7 @@ export function Start() {
             <div className="welcome-hero">
               <Actor variant="idle" size={190} />
             </div>
-            <h1 className="welcome-logo">펭귄 모험</h1>
+            <h1 className="welcome-logo">빙하루</h1>
             <p className="welcome-sub">매일 작은 습관으로 공주를 구하러 가요!</p>
           </div>
           <div className="bottom-cta welcome-cta">
@@ -212,11 +212,11 @@ export function Descent() {
 // ---------- O4 부모님께 폰 넘기기 ----------
 export function HandToParent() {
   return (
-    <section className="screen kid center-screen" data-testid="screen-handoff">
-      <Snow />
-      <Hero pose="wave" size={170} />
-      <h1 className="jua big-title">엄마 아빠를 불러 주세요!</h1>
-      <p className="muted">처음 한 번만 부모님이 설정해요</p>
+    <section className="screen ob" data-testid="screen-handoff">
+      <div className="ob-body ob-center">
+        <ObBubble>{"이제 부모님을 불러줘!\n처음 준비는 함께 해보자."}</ObBubble>
+        <ObHero src="./char/onb_parent.png" height={220} />
+      </div>
       <div className="bottom-cta">
         <button className="btn btn-blue btn-xl" onClick={() => go("/setup/pin")} data-testid="parent-came">
           부모님이 왔어요
@@ -226,14 +226,29 @@ export function HandToParent() {
   );
 }
 
+/** 피그마 온보딩의 말풍선: 흰 상자에 하늘색 테두리, 아래에 꼬리 */
+function ObBubble({ children }: { children: string }) {
+  return <div className="ob-bubble">{children}</div>;
+}
+
+/** 새 펭귄 그림(투명 PNG) + 바닥 그림자. 장식이라 읽어 줄 필요가 없다 */
+function ObHero({ src, height }: { src: string; height: number }) {
+  return (
+    <div className="ob-hero">
+      <img src={src} alt="" style={{ height }} draggable={false} />
+    </div>
+  );
+}
+
 function SetupHead({ step }: { step: number }) {
   return (
-    <header className="setup-head">
-      <span>부모님 설정</span>
-      <b>({step}/3)</b>
+    <header className="ob-head">
       <div className="setup-bar">
         <i style={{ width: `${(step / 3) * 100}%` }} />
       </div>
+      <p>
+        부모님 설정 {step} / 3
+      </p>
     </header>
   );
 }
@@ -262,11 +277,14 @@ export function SetupPin() {
   }
 
   return (
-    <section className="screen parent setup" data-testid="screen-setup-pin">
+    <section className="screen ob" data-testid="screen-setup-pin">
       <SetupHead step={1} />
-      <h1 className="setup-title">{first === null ? "부모님만 아는 비밀번호\n4자리를 만들어 주세요" : "한 번 더 눌러 주세요"}</h1>
-      <p className="error" data-testid="pin-error">{error}</p>
-      <PinPad onDone={done} shake={shake} testPrefix="ob-key" />
+      <div className="ob-body">
+        <ObBubble>{first === null ? "부모님만 아는\n네 자리 번호를 정해 주세요." : "한 번 더 눌러 주세요"}</ObBubble>
+        <ObHero src="./char/onb_parent.png" height={92} />
+        <p className="error" data-testid="pin-error">{error}</p>
+        <PinPad onDone={done} shake={shake} testPrefix="ob-key" />
+      </div>
     </section>
   );
 }
@@ -281,22 +299,29 @@ export function SetupName() {
   }, []);
 
   return (
-    <section className="screen parent setup" data-testid="screen-setup-name">
+    <section className="screen ob" data-testid="screen-setup-name">
       <SetupHead step={2} />
-      <h1 className="setup-title">아이 이름을 알려 주세요</h1>
-      <input
-        className="field"
-        value={name}
-        maxLength={10}
-        placeholder="예: 하늘"
-        onChange={(e) => setName(e.target.value)}
-        data-testid="child-name"
-        autoFocus
-      />
-      <p className="hint">상점의 "{nick(name.trim() || "하늘")}의 코인"처럼 쓰여요</p>
+      <div className="ob-body">
+        <ObBubble>{"내가 널 뭐라고 부르면 될까?\n좋아하는 이름을 알려줘!"}</ObBubble>
+        <ObHero src="./char/onb_name.png" height={120} />
+        <label className="ob-label" htmlFor="child-name-input">
+          아이 이름
+        </label>
+        <input
+          id="child-name-input"
+          className="field"
+          value={name}
+          maxLength={10}
+          placeholder="예: 하늘"
+          onChange={(e) => setName(e.target.value)}
+          data-testid="child-name"
+          autoFocus
+        />
+        <p className="hint">상점의 "{nick(name.trim() || "하늘")}의 코인"처럼 쓰여요</p>
+      </div>
       <div className="bottom-cta">
         <button
-          className="btn btn-purple btn-lg"
+          className="btn btn-blue btn-lg"
           disabled={!ok}
           onClick={() => {
             draft.childName = name.trim();
@@ -345,40 +370,45 @@ export function SetupMission() {
   }
 
   return (
-    <section className="screen parent setup" data-testid="screen-setup-mission">
+    <section className="screen ob" data-testid="screen-setup-mission">
       <SetupHead step={3} />
-      <h1 className="setup-title">처음엔 미션 1개를 골라요</h1>
-      <div className="mission-pick" role="radiogroup">
-        {MISSIONS.map((m) => (
-          <div key={m.id} className={`pick-row ${picked === m.id ? "on" : ""}`}>
-            <label data-testid={`pick-${m.id}`}>
-              <input type="radio" name="mission" checked={picked === m.id} onChange={() => setPicked(m.id)} />
-              <span className="pick-icon">{m.icon}</span>
-              <span className="pick-name">{m.name}</span>
-              <span className={`badge ${m.kind}`}>{m.kind === "video" ? "영상" : "사진"}</span>
-            </label>
-            {picked === m.id && m.kind === "video" && <SecondsStepper value={seconds} onChange={setSeconds} testId="seconds" />}
-          </div>
-        ))}
-        <button
-          className="pick-row locked-row"
-          onClick={() => {
-            handoff.subscribeBack = "/setup/mission";
-            go("/subscribe");
-          }}
-          data-testid="more-missions"
-        >
-          <Icon name="lock" size={20} />
-          <span>
-            <b>미션 더 추가하기</b>
-            <small>구독하면 더 할 수 있어요</small>
-          </span>
-          <Icon name="right" size={20} />
-        </button>
+      <div className="ob-body ob-mission">
+        <ObBubble>{"오늘부터 어떤 미션을\n해볼까? 하나를 골라줘!"}</ObBubble>
+        <ObHero src="./char/onb_mission.png" height={104} />
+        <div className="mission-pick" role="radiogroup">
+          {MISSIONS.map((m) => (
+            <div key={m.id} className={`pick-row ${picked === m.id ? "on" : ""}`}>
+              <label data-testid={`pick-${m.id}`}>
+                <input type="radio" name="mission" checked={picked === m.id} onChange={() => setPicked(m.id)} />
+                <span className="pick-icon">{m.icon}</span>
+                <span className="pick-name">
+                  {picked === m.id && <Icon name="check" size={16} />} {m.name}
+                </span>
+                <span className="pick-kind">{m.kind === "video" ? "영상 찍기" : "사진 찍기"}</span>
+              </label>
+              {picked === m.id && m.kind === "video" && <SecondsStepper value={seconds} onChange={setSeconds} testId="seconds" />}
+            </div>
+          ))}
+          <button
+            className="pick-row locked-row"
+            onClick={() => {
+              handoff.subscribeBack = "/setup/mission";
+              go("/subscribe");
+            }}
+            data-testid="more-missions"
+          >
+            <Icon name="lock" size={20} />
+            <span>
+              <b>미션 더 추가하기</b>
+              <small>구독하면 더 할 수 있어요</small>
+            </span>
+            <Icon name="right" size={20} />
+          </button>
+        </div>
       </div>
       <div className="bottom-cta">
-        <button className="btn btn-purple btn-lg" onClick={choose} data-testid="mission-choose">
-          선택
+        <button className="btn btn-blue btn-lg" onClick={choose} data-testid="mission-choose">
+          이 미션으로 시작
         </button>
       </div>
     </section>
