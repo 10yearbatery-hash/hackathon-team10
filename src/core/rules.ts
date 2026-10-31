@@ -120,13 +120,13 @@ export interface SubmitResult {
  * R-02, R-04, R-05: 인증을 제출하면 즉시 클리어. 오늘 단계의 미션을 모두 깨면 한 단계 올라가고 "내일 만나자"가 된다.
  * 쉬는 중이거나, 이미 완료한 미션이거나, 지금 미션 목록에 없는 미션이면 기록하지 않는다.
  */
-export function submitProof(state: AppState, input: { id: string; missionId: MissionId; now: number }): SubmitResult {
+export function submitProof(state: AppState, input: { id: string; missionId: MissionId; now: number; practice?: boolean }): SubmitResult {
   const setting = state.missions.find((m) => m.id === input.missionId);
+  const practice = input.practice === true;
   const blocked =
     !setting ||
-    isResting(state, input.now) ||
-    cardStatus(state, input.missionId) === "done" ||
-    state.proofs.some((p) => p.id === input.id);
+    state.proofs.some((p) => p.id === input.id) ||
+    (!practice && (isResting(state, input.now) || cardStatus(state, input.missionId) === "done"));
   if (blocked) return { state, proof: null, climbed: false };
 
   const def = missionDef(input.missionId);
@@ -135,13 +135,16 @@ export function submitProof(state: AppState, input: { id: string; missionId: Mis
     missionId: def.id,
     missionName: def.name,
     kind: def.kind,
-    stage: state.stage,
+    // 연습 미션은 0단계로 기록해서 1일 미션 카드에 세지 않는다 (ADR-014)
+    stage: practice ? 0 : state.stage,
     date: dateKey(input.now),
     at: input.now,
     status: "clear",
-    failSeen: false
+    failSeen: false,
+    ...(practice ? { practice: true } : {})
   };
   let next: AppState = { ...state, proofs: [...state.proofs, proof] };
+  if (practice) return { state: next, proof, climbed: false };
   const allDone = stageCards(next).every((c) => c.status === "done");
   const climbed = allDone && next.stage < LAST_STAGE;
   if (climbed) next = { ...next, stage: next.stage + 1, restDate: dateKey(input.now) };
@@ -155,10 +158,12 @@ export function submitProof(state: AppState, input: { id: string; missionId: Mis
 export function reviewProof(state: AppState, proofId: string, verdict: "ok" | "fail"): AppState {
   const target = state.proofs.find((p) => p.id === proofId);
   if (!target || target.status !== "clear") return state;
-  const proofs = state.proofs.map((p) => (p.id === proofId ? { ...p, status: verdict } : p));
-  if (verdict === "ok") return { ...state, proofs };
-  // 실패한 인증이 지금 단계의 것이면 아직 올라가지 않았으므로 내려가지 않는다 (가정, ADR-010)
-  const stage = target.stage < state.stage ? Math.max(1, state.stage - 1) : state.stage;
+  if (verdict === "ok") return { ...state, proofs: state.proofs.map((p) => (p.id === proofId ? { ...p, status: verdict } : p)) };
+  // 실패한 인증이 지금 단계의 것이면 아직 올라가지 않았으므로 내려가지 않는다 (가정, ADR-010).
+  // 연습 미션(0단계)이 실패해도 단계는 그대로다 (ADR-014)
+  const stage = !target.practice && target.stage < state.stage ? Math.max(1, state.stage - 1) : state.stage;
+  const dropped = stage < state.stage;
+  const proofs = state.proofs.map((p) => (p.id === proofId ? { ...p, status: verdict, dropped } : p));
   return { ...state, proofs, stage, restDate: null };
 }
 

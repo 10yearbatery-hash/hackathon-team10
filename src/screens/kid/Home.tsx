@@ -41,12 +41,15 @@ export default function Home() {
     const el = box.current;
     const t1 = window.setTimeout(() => sfx.climb(), 700);
     const t2 = window.setTimeout(() => el?.scrollTo({ top: scrollFor(state.stage, el.clientWidth / MAP_W, el.clientHeight), behavior: "smooth" }), 700);
-    let t3 = 0;
-    if (handoff.firstClear) {
-      handoff.firstClear = false;
-      t3 = window.setTimeout(() => setFirstBanner(true), 2100);
-    }
-    return () => [t1, t2, t3].forEach((t) => window.clearTimeout(t));
+    return () => [t1, t2].forEach((t) => window.clearTimeout(t));
+  }, []);
+
+  // 온보딩 연습 미션을 막 끝냈다 (ADR-014)
+  useEffect(() => {
+    if (!handoff.firstClear) return;
+    handoff.firstClear = false;
+    const t = window.setTimeout(() => setFirstBanner(true), 600);
+    return () => window.clearTimeout(t);
   }, []);
 
   useEffect(() => {
@@ -140,7 +143,7 @@ export default function Home() {
           <div className="banner-card">
             <Hero pose="thumbs" size={110} motion="jump" />
             <p className="jua">이제부터는 혼자서!</p>
-            <small>내일 {state.stage}일에서 만나자</small>
+            <small>{state.stage}일 발판을 눌러 오늘의 미션을 해 봐!</small>
             <button className="btn btn-blue btn-lg" onClick={() => setFirstBanner(false)} data-testid="first-banner-ok">
               좋아!
             </button>
@@ -200,14 +203,16 @@ export default function Home() {
             <Hero pose="thumbs" size={150} motion="jump" />
             <p>{nick(state.childName)}가 다시 해볼 수 있게 응원할게!</p>
           </div>
-          <p className="retry-steps">
-            {state.stage + 1}단계 → {state.stage}단계
-          </p>
+          {fails.some((f) => f.dropped) && (
+            <p className="retry-steps">
+              {state.stage + 1}단계 → {state.stage}단계
+            </p>
+          )}
           <div className="v3-card">
             <b>
               코인 <span data-testid="retry-coins">-{fails.length * 10}</span>
             </b>
-            <small>부모님 확인 후 한 단계 내려왔어.</small>
+            <small>{fails.some((f) => f.dropped) ? "부모님 확인 후 한 단계 내려왔어." : "부모님이 한 번 더 해보자고 하셨어."}</small>
           </div>
           <div className="v3-actions">
             <button

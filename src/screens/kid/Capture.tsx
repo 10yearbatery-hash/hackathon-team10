@@ -112,7 +112,7 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
       // 저장 공간이 모자라도 아이의 진행은 막지 않는다. 부모 확인 화면에서 "영상을 불러올 수 없어요"로 보인다
     }
     const before = getState();
-    const result = submitProof(before, { id, missionId, now: Date.now() });
+    const result = submitProof(before, { id, missionId, now: Date.now(), practice: first });
     if (!result.proof) {
       go("/home", { replace: true });
       return;
