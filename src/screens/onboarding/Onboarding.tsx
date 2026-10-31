@@ -8,6 +8,7 @@ import { sfx, unlockSound } from "../../platform/sound";
 import { Icon } from "../../ui/icons";
 import { MAP_W, MapPath, scrollFor, TOTAL_H } from "../../ui/MapPath";
 import { Hero, nick, PinPad } from "../../ui/parts";
+import { msUntilReveal } from "../../ui/Splash";
 
 /** 부모 설정 중인 값. O7에서 한 번에 저장한다 */
 const draft = { pin: "", childName: "" };
@@ -22,30 +23,99 @@ function Snow() {
   );
 }
 
-// ---------- O1 시작 ----------
+// ---------- O1 시작 (환영 → 펭귄 인사) ----------
+const GREETING = ["안녕! 나는 파란 펭귄이야.", "공주를 구하러 같이 가 줄래?"];
+
+/** 글자를 하나씩 보여준다. 다 쓰면 onDone */
+function useTypewriter(lines: string[], run: boolean, onDone: () => void) {
+  const full = lines.join("\n");
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!run) return setN(0);
+    let i = 0;
+    const t = window.setInterval(() => {
+      i += 1;
+      setN(i);
+      if (i >= full.length) {
+        window.clearInterval(t);
+        onDone();
+      }
+    }, 55);
+    return () => window.clearInterval(t);
+  }, [run]);
+  return full.slice(0, n);
+}
+
 export function Start() {
+  const [step, setStep] = useState<"welcome" | "greet">("welcome");
+  // 스플래시가 걷히는 순간에 등장 연출이 시작되게 그때까지 그리지 않는다
+  const [revealed, setRevealed] = useState(msUntilReveal() === 0);
+  useEffect(() => {
+    if (revealed) return;
+    const t = window.setTimeout(() => setRevealed(true), msUntilReveal());
+    return () => window.clearTimeout(t);
+  }, [revealed]);
+  const [typed, setTyped] = useState(false);
+  const text = useTypewriter(GREETING, step === "greet", () => {
+    setTyped(true);
+    sfx.coin();
+  });
+
   return (
-    <section className="screen kid start" data-testid="screen-start">
+    <section className={`screen start-v2 step-${step}`} data-testid="screen-start">
       <Snow />
-      <div className="start-hill" aria-hidden="true" />
-      <div className="start-body">
-        <p className="eyebrow">펭귄 구출 대모험</p>
-        <h1 className="logo">펭귄 모험</h1>
-        <Hero pose="wave" size={190} />
-      </div>
-      <div className="bottom-cta">
-        <button
-          className="btn btn-blue btn-xl"
-          data-testid="start"
-          onClick={() => {
-            unlockSound();
-            sfx.tap();
-            go("/intro");
-          }}
-        >
-          <Icon name="play" size={22} /> 시작
-        </button>
-      </div>
+      {!revealed ? null : step === "welcome" ? (
+        <>
+          <div className="welcome-body">
+            <div className="welcome-hero">
+              <Hero pose="wave" size={200} />
+            </div>
+            <h1 className="welcome-logo">펭귄 모험</h1>
+            <p className="welcome-sub">매일 작은 습관으로 공주를 구하러 가요!</p>
+          </div>
+          <div className="bottom-cta welcome-cta">
+            <button
+              className="btn btn-blue btn-xl"
+              data-testid="start"
+              onClick={() => {
+                unlockSound();
+                sfx.tap();
+                setStep("greet");
+              }}
+            >
+              시작하기
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <button className="greet-back" onClick={() => { setTyped(false); setStep("welcome"); }} aria-label="뒤로">
+            <Icon name="left" size={26} />
+          </button>
+          <div className="greet-body">
+            <div className="greet-bubble" data-testid="greet-bubble">
+              {text}
+              <span className="caret" aria-hidden="true" />
+            </div>
+            <div className="greet-hero">
+              <Hero pose="cheer" size={170} />
+            </div>
+          </div>
+          <div className="bottom-cta">
+            <button
+              className={`btn btn-xl ${typed ? "btn-blue" : "btn-ghost"}`}
+              disabled={!typed}
+              onClick={() => {
+                sfx.tap();
+                go("/intro");
+              }}
+              data-testid="greet-next"
+            >
+              계속하기
+            </button>
+          </div>
+        </>
+      )}
     </section>
   );
 }

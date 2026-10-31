@@ -8,6 +8,7 @@ import Capture from "./screens/kid/Capture";
 import Clear from "./screens/kid/Clear";
 import Home from "./screens/kid/Home";
 import Shop from "./screens/kid/Shop";
+import { Splash } from "./ui/Splash";
 import { BoughtGifts, GiftManage, MissionManage, ParentHome, ParentPin, Review, Subscribe } from "./screens/parent/Parent";
 
 const ONBOARDING = ["/start", "/intro", "/descent", "/handoff", "/setup/pin", "/setup/name", "/setup/mission"];
@@ -42,8 +43,16 @@ export default function App() {
     if (target) go(target, { replace: true });
   }, [target]);
 
-  if (target) return null;
+  // 스플래시는 앱을 열 때 한 번만 나온다. 같은 자리에 두어 화면이 바뀌어도 다시 시작하지 않는다
+  return (
+    <>
+      {target ? null : <Screen path={path} />}
+      <Splash />
+    </>
+  );
+}
 
+function Screen({ path }: { path: string }) {
   const capture = match("/capture/:id", path);
   const first = match("/first/:id", path);
   const clear = match("/clear/:id", path);

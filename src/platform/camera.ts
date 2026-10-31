@@ -2,7 +2,18 @@
 
 export type CameraError = "denied" | "unavailable";
 
+/** 카메라를 연다. 방금 다른 화면이 카메라를 놓은 직후처럼 잠깐 못 여는 경우가 있어 한 번 더 시도한다 */
 export async function openCamera(): Promise<MediaStream> {
+  try {
+    return await openOnce();
+  } catch (error) {
+    if (error === "denied") throw error;
+    await new Promise((r) => setTimeout(r, 600));
+    return openOnce();
+  }
+}
+
+async function openOnce(): Promise<MediaStream> {
   if (!navigator.mediaDevices?.getUserMedia) throw "unavailable" satisfies CameraError;
   try {
     return await navigator.mediaDevices.getUserMedia({

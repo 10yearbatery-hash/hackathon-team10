@@ -919,3 +919,238 @@
   font-size: 16px;
   color: var(--v3-blue-dark);
 }
+
+/* ---------- 스플래시 (앱을 열 때) ---------- */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, #4fb0f2 0%, #2f8be0 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  clip-path: circle(150% at 50% 44%);
+  pointer-events: none;
+}
+
+.splash-close {
+  transition: clip-path 0.6s cubic-bezier(0.6, 0, 0.8, 0.4);
+  clip-path: circle(0% at 50% 44%);
+}
+
+.splash-hero {
+  width: 230px;
+  height: 230px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 70%);
+  display: grid;
+  place-items: end center;
+  overflow: hidden;
+  animation: splash-rise 0.65s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.splash-hero img {
+  width: 190px;
+  transform-origin: 50% 90%;
+  animation: splash-tilt 1.1s ease-in-out 0.65s both;
+}
+
+.splash-logo {
+  position: absolute;
+  bottom: 14%;
+  font-family: var(--jua);
+  font-size: 40px;
+  color: #fff;
+  letter-spacing: -0.5px;
+  text-shadow: 0 3px 0 rgba(20, 80, 150, 0.35);
+  animation: splash-logo 0.5s ease-out 0.3s both;
+}
+
+@keyframes splash-rise {
+  from {
+    transform: translateY(70%) scale(0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes splash-tilt {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-7deg);
+  }
+  55% {
+    transform: rotate(6deg);
+  }
+  80% {
+    transform: rotate(-2deg) scale(1.03, 0.97);
+  }
+}
+
+@keyframes splash-logo {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-hero,
+  .splash-hero img,
+  .splash-logo {
+    animation: none;
+  }
+}
+
+/* ---------- O1 환영과 펭귄 인사 ---------- */
+.start-v2 {
+  background: linear-gradient(180deg, #ffffff 0%, #eaf7ff 60%, #d6effd 100%);
+}
+
+.start-v2 .snow i {
+  background: #bfe3fa;
+}
+
+.welcome-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+}
+
+.welcome-hero {
+  animation: pop-in 0.55s cubic-bezier(0.2, 1.5, 0.4, 1) 0.1s both;
+}
+
+.welcome-hero .hero {
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+.welcome-logo {
+  font-family: var(--jua);
+  font-weight: 400;
+  font-size: 46px;
+  color: #2f8be0;
+  margin-top: 6px;
+  animation: rise-in 0.5s ease-out 0.3s both;
+}
+
+.welcome-sub {
+  color: var(--v3-muted);
+  font-size: 15px;
+  animation: rise-in 0.5s ease-out 0.45s both;
+}
+
+.welcome-cta {
+  animation: rise-in 0.5s ease-out 0.6s both;
+}
+
+.greet-back {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  left: 12px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: #9aa6b8;
+  z-index: 2;
+}
+
+.greet-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  position: relative;
+}
+
+.greet-bubble {
+  min-width: 220px;
+  max-width: 300px;
+  min-height: 64px;
+  padding: 14px 18px;
+  background: #fff;
+  border: 2px solid #dfe9f0;
+  border-radius: 18px;
+  font-family: var(--jua);
+  font-size: 21px;
+  line-height: 1.4;
+  color: var(--v3-ink);
+  white-space: pre-line;
+  position: relative;
+  animation: pop-in 0.35s cubic-bezier(0.2, 1.5, 0.4, 1) 0.55s both;
+}
+
+.greet-bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -11px;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  background: #fff;
+  border-right: 2px solid #dfe9f0;
+  border-bottom: 2px solid #dfe9f0;
+  transform: rotate(45deg);
+}
+
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: var(--v3-blue-dark);
+  animation: blink 0.9s steps(1) infinite;
+}
+
+.greet-hero {
+  animation: hop-in 0.7s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+
+.greet-hero .hero {
+  animation: bob 2s ease-in-out 0.8s infinite;
+}
+
+@keyframes pop-in {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@keyframes hop-in {
+  0% {
+    transform: translateY(120%) scale(0.9);
+  }
+  60% {
+    transform: translateY(-12%) scale(1.02, 0.98);
+  }
+  80% {
+    transform: translateY(0) scale(1.06, 0.92);
+  }
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(-8px);
+  }
+}

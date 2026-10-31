@@ -17,9 +17,15 @@ export async function pin(page: Page, digits: string, prefix = "key") {
 export async function onboard(page: Page, opts: { name?: string; screenshots?: boolean } = {}) {
   const snap = (n: string) => (opts.screenshots ? shot(page, n) : Promise.resolve());
   await page.goto("/");
+  await expect(page.getByTestId("splash")).toBeVisible();
+  await snap("o0-splash");
+  await expect(page.getByTestId("splash")).toBeHidden({ timeout: 5000 });
   await expect(page.getByTestId("screen-start")).toBeVisible();
   await snap("o1-start");
   await page.getByTestId("start").click();
+  await expect(page.getByTestId("greet-next")).toBeEnabled({ timeout: 6000 });
+  await snap("o1-greet");
+  await page.getByTestId("greet-next").click();
   await expect(page.getByTestId("screen-intro")).toBeVisible();
   await snap("o2-intro");
   // 10초 영상을 끝까지 기다리지 않고 끝난 것으로 친다
