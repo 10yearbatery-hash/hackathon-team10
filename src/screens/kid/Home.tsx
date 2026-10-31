@@ -212,7 +212,7 @@ export default function Home() {
             <b>
               코인 <span data-testid="retry-coins">-{fails.length * 10}</span>
             </b>
-            <small>{fails.some((f) => f.dropped) ? "부모님 확인 후 한 단계 내려왔어." : "부모님이 한 번 더 해보자고 하셨어."}</small>
+            <small>{fails.some((f) => f.dropped) ? "퀘스트를 올바르게 하지 않았어!" : "부모님이 한 번 더 해보자고 하셨어."}</small>
           </div>
           <div className="v3-actions">
             <button
