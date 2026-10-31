@@ -114,7 +114,7 @@ export function MapPath({ width, current, resting, onTap, climbFrom = null, shak
             </div>
             <div className="map-next" style={{ color: ch.labelColor }}>
               <b>{ch.next}</b>
-              {i === CHAPTERS.length - 1 && <small>100번째 미션으로 공주님을 풀어주세요.</small>}
+              {i === CHAPTERS.length - 1 && <small>100번째 미션으로 공주님을 구해주세요.</small>}
             </div>
           </section>
         ))}
