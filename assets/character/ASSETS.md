@@ -49,6 +49,18 @@
 | `hero/cutout/parts/hero_*.png` (15개) | 위 두 시트에서 연두 배경을 지우고 부품별로 자름 (`tools/cut_parts.py`) | | 2026-10-31 | 몸 7개(head, body, wing_l/r, foot_l/r, tuft), 얼굴 8개(eye_white_l/r, pupil_l/r, brow_l/r, beak_top, beak_bottom). 가장자리 반투명이 거의 없어 확대하면 거칠 수 있음 |
 | `hero/cutout/full/hero_full.png` | 원본의 큰 펭귄 영역을 잘라 바깥 흰 배경만 지움 (`tools/cutout_full.py`, 허용오차 45, 깎기 2) | | 2026-10-31 | 785x1126. 어두운 바탕과 밝은 바탕 위에서 테두리 찌꺼기 없음을 눈으로 확인 |
 | `hero/video/hero_look_idle.mp4` | 사용자 제공 (제작 도구 미확인). 원래 이름 `펭귄_보는_영상.mp4` | 정면을 바라보다 고개를 기울이고 윙크하며 시선을 옮기는 영상 | 2026-10-31 | H.264+AAC, 1280x720, 4.03초, 24fps, 679KB. 욕실 배경이 영상에 포함(불투명). 소리 트랙 있음(평균 -25dB). 오른쪽 아래에 작은 별 모양 마크가 있음(웹에서는 가로로 확대해 가림). 처음과 끝 프레임 유사도 0.87이라 반복 재생 때 약간 튐 |
+| `hero/generated/onboarding/hero_onboarding_o1_welcome_jump.png` | Codex 이미지 생성 | `hero/source/hero_penguin_sheet.png`, `hero/cutout/full/hero_full.png` | 2026-11-01 | 빙하루 온보딩 O1, 반가운 점프. 투명 PNG |
+| `hero/generated/onboarding/hero_onboarding_o2_story_peek.png` | Codex 이미지 생성 | 위 두 원본 | 2026-11-01 | O2, 모험을 내다보는 모습. 투명 PNG |
+| `hero/generated/onboarding/hero_onboarding_o4_parent_guide.png` | Codex 이미지 생성 | 위 두 원본 | 2026-11-01 | O4와 부모 설정 상태, 안내하는 모습. 투명 PNG |
+| `hero/generated/onboarding/hero_onboarding_o6_name_greeting.png` | Codex 이미지 생성 | 위 두 원본 | 2026-11-01 | O6, 이름을 부르며 인사. 투명 PNG |
+| `hero/generated/onboarding/hero_onboarding_o7_mission_choose.png` | Codex 이미지 생성 | 위 두 원본 | 2026-11-01 | O7, 첫 미션 선택. 투명 PNG |
+| `hero/generated/onboarding/hero_onboarding_o8_brush_simple.png` | Codex 이미지 생성 | 위 두 원본 | 2026-11-01 | O8 양치 기록 상태, 칫솔 든 모습. 투명 PNG |
+| `hero/generated/onboarding/hero_onboarding_o9_success_jump.png` | Codex 이미지 생성 | 위 두 원본 | 2026-11-01 | O9 및 제출 완료 상태, 환호하는 점프. 투명 PNG |
+| `hero/generated/onboarding/hero_onboarding_mission_brushing.png` | Codex 이미지 생성 | 위 두 원본 | 2026-11-01 | O8 양치 미션 상세, 칫솔과 세면대. 투명 PNG |
+| `hero/generated/onboarding/hero_onboarding_mission_handwashing.png` | Codex 이미지 생성 | 위 두 원본 | 2026-11-01 | O8 손 씻기 미션 상세, 물과 거품. 투명 PNG |
+| `hero/generated/onboarding/hero_onboarding_mission_vitamin.png` | Codex 이미지 생성 | 파란 펭귄 원본과 기존 양치·손 씻기 미션 그림 | 2026-11-01 | 비타민 먹기, 비타민 병과 알약. 투명 PNG |
+| `hero/generated/onboarding/hero_onboarding_mission_reading.png` | Codex 이미지 생성 | 위와 같음 | 2026-11-01 | 책읽기, 펼친 그림책. 투명 PNG |
+| `hero/generated/onboarding/hero_onboarding_mission_packing.png` | Codex 이미지 생성 | 위와 같음 | 2026-11-01 | 준비물 챙기기, 가방에 학용품 넣기. 투명 PNG |
 
 ### heroine (분홍 펭귄)
 
