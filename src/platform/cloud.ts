@@ -1,4 +1,4 @@
-// Supabase 감싸기 (ADR-016). 부모 계정 로그인, 진행 상태 JSON, 인증 사진·영상을 서버에 둔다.
+// Supabase 감싸기 (ADR-017). 부모 계정 로그인, 진행 상태 JSON, 인증 사진·영상을 서버에 둔다.
 // 환경 변수(VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)가 없으면 꺼지고, 앱은 폰 안 저장만으로 동작한다.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { AppState } from "../core/model";

@@ -2087,7 +2087,7 @@ p {
   padding: 8px 4px;
 }
 
-/* ---------- P8 계정과 기록 저장 (ADR-016) ---------- */
+/* ---------- P8 계정과 기록 저장 (ADR-017) ---------- */
 .account-form {
   display: flex;
   flex-direction: column;

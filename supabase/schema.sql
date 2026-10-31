@@ -1,4 +1,4 @@
--- 펭귄 모험 서버 설정 (ADR-016). Supabase 대시보드 > SQL Editor에 붙여 넣고 Run을 한 번 누른다.
+-- 펭귄 모험 서버 설정 (ADR-017). Supabase 대시보드 > SQL Editor에 붙여 넣고 Run을 한 번 누른다.
 -- 계정마다 진행 상태 한 줄(family_state)과, 인증 사진·영상 폴더(proofs/<계정 id>/)를 둔다.
 -- 행 수준 보안(RLS)으로 자기 계정의 데이터만 읽고 쓸 수 있다.
 

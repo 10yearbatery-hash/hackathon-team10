@@ -17,7 +17,7 @@
           └─ 효과음 → Web Audio (음원 파일 없음)
 ```
 
-폰 안 저장이 기본이다 (ADR-003). 부모가 이메일로 로그인하면 같은 내용을 Supabase에도 올린다 (ADR-016, `app/sync.ts`, `platform/cloud.ts`). 연결 값(`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`)이 없으면 서버 기능은 꺼진다. 부모 영역은 같은 폰에서 PIN으로 나눈다 (ADR-007).
+폰 안 저장이 기본이다 (ADR-003). 부모가 이메일로 로그인하면 같은 내용을 Supabase에도 올린다 (ADR-017, `app/sync.ts`, `platform/cloud.ts`). 연결 값(`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`)이 없으면 서버 기능은 꺼진다. 부모 영역은 같은 폰에서 PIN으로 나눈다 (ADR-007).
 
 ## 2. 기술 스택
 
