@@ -1,4 +1,4 @@
-// 앱을 열 때 한 번 나오는 스플래시. 파란 화면에 펭귄이 뛰어올라 착지하고 한 번 더 깡충 뛴 뒤,
+// 앱을 열 때 한 번 나오는 스플래시 (앱 이름 없이 펭귄만). 파란 화면에 펭귄이 뛰어올라 착지하고 한 번 더 깡충 뛴 뒤,
 // 펭귄 자리에서 하얀 원이 바깥으로 퍼지며 다음 화면이 열린다.
 import { useEffect, useState } from "react";
 import { Actor } from "./parts";
@@ -35,7 +35,6 @@ export function Splash() {
       <div className="splash-stage">
         <Actor variant="splash" size={170} />
       </div>
-      <p className="splash-logo">펭귄 모험</p>
       <span className="splash-burst" />
     </div>
   );
