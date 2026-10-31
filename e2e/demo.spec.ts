@@ -35,13 +35,21 @@ test("시연 시나리오: 온보딩부터 실패 처리, 미션 관리와 구�
 
   // 7. 상점에서 코인 부족
   await page.getByTestId("tab-shop").click();
-  await expect(page.getByTestId("screen-shop")).toBeVisible();
-  await expect(page.getByText("하늘이의 코인")).toBeVisible();
+  await expect(page.getByTestId("shop-welcome")).toContainText("안녕~ 뭐 사러 왔어?");
+  await expect(page.getByTestId("wallet")).toContainText("20 코인");
+  await shot(page, "c9-shop-welcome");
+  await page.getByTestId("shop-browse").click();
+  await expect(page.getByTestId("shop-list")).toBeVisible();
   await shot(page, "c9-shop");
   await page.getByTestId("gift-g-movie").click();
-  await expect(page.getByTestId("buy-short")).toContainText("코인이 조금 더 필요해");
+  await expect(page.getByTestId("buy-short")).toContainText("코인이 부족해");
+  await expect(page.getByTestId("need-more")).toHaveText("30코인");
   await shot(page, "c10-short");
+  await page.getByTestId("short-list").click();
+  await expect(page.getByTestId("shop-list")).toBeVisible();
+  await page.getByTestId("gift-g-movie").click();
   await page.getByTestId("short-ok").click();
+  await expect(page.getByTestId("tab-parent")).toBeVisible();
 
   // 8. 부모 탭, PIN, 인증 확인에서 실패
   await page.getByTestId("tab-parent").click();
@@ -118,11 +126,15 @@ test("다시 찍어서 클리어하고, 코인으로 선물을 사고 부모가 
   await page.getByTestId("back").click();
   await page.getByTestId("to-kid").click();
   await page.getByTestId("tab-shop").click();
+  await page.getByTestId("shop-browse").click();
   await page.getByTestId("gift-g-movie").click();
   await page.getByTestId("buy-ok").click();
-  await expect(page.getByTestId("buy-done")).toContainText("주문했어요!");
+  await expect(page.getByTestId("buy-done")).toContainText("구매해 줘서 고마워!");
+  await expect(page.getByTestId("wallet")).toContainText("0 코인");
+  await shot(page, "c10-done");
   await page.getByTestId("done-ok").click();
-  await expect(page.getByTestId("wallet")).toContainText("0");
+  await expect(page.getByTestId("shop-list")).toBeVisible();
+  await page.getByTestId("shop-back").click();
 
   // 부모가 실패를 누르면 코인은 마이너스가 될 수 있다 (R-09)
   await page.getByTestId("tab-parent").click();

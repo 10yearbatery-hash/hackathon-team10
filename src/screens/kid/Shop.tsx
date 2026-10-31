@@ -1,140 +1,208 @@
-// C9 선물 상점, C10 구매 팝업 (이 선물을 살까? / 코인이 조금 더 필요해 / 주문했어요!)
-// 디자인: 피그마 "V3/C9", "V3/C10A", "V3/C10B", "V3/C10C"
+// C9 선물 상점, C10 구매 (이 선물을 살까? / 구매해 줘서 고마워! / 코인이 부족해)
+// 디자인: 피그마 "상점 01 · 어서 와!", "상점 02 · 상품 둘러보기", "상점 03 · 구매 완료", "상점 04 · 크레딧 부족"
+// 나무 간판과 계산대가 있는 가게에서 펭귄 점원이 맞이한다. 피그마의 "크레딧"은 앱 전체 용어에 맞춰 "코인"으로 쓴다.
 import { useState } from "react";
 import type { Gift } from "../../core/model";
 import { buyGift, coins } from "../../core/rules";
+import { go } from "../../app/router";
 import { commit, getState, makeId, useAppState } from "../../app/store";
 import { sfx } from "../../platform/sound";
-import { Hero, KidTabBar, Modal, nick, type Pose } from "../../ui/parts";
+import { Hero, Modal } from "../../ui/parts";
 
-type Popup = { kind: "confirm" | "short" | "done"; gift: Gift } | null;
+type View = { kind: "welcome" } | { kind: "list" } | { kind: "done"; gift: Gift } | { kind: "short"; gift: Gift };
+type Keeper = "wave" | "wink" | "cry";
 
-function V3Coin({ value, testId = "coin-chip" }: { value: number; testId?: string }) {
+/** 기본 선물의 한 줄 설명. 부모가 새로 만든 선물은 공통 문구를 쓴다 */
+const GIFT_DESC: Record<string, string> = {
+  "g-movie": "팝콘과 함께 우리 가족 영화 시간",
+  "g-dinner": "오늘 저녁은 내가 좋아하는 메뉴!",
+  "g-play": "엄마 아빠랑 신나게 놀아요",
+  "g-park": "가족과 함께 나들이를 떠나요"
+};
+
+const STRIPES = Array.from({ length: 12 }, (_, i) => i);
+
+function ShopCoin({ value }: { value: number }) {
   return (
-    <span className="v3-coin" data-testid={testId}>
-      <i aria-hidden="true">●</i>
-      <b>{value.toLocaleString("ko-KR")}</b>
+    <span className="shop-coin" data-testid="wallet">
+      <i aria-hidden="true">●</i> {value.toLocaleString("ko-KR")} 코인
     </span>
   );
 }
 
-function PopupHead({ title, sub, pose }: { title: string; sub: string; pose: Pose }) {
+/** 말풍선과 계산대 뒤의 펭귄 점원 */
+function Counter({ say, keeper }: { say: string; keeper: Keeper }) {
   return (
-    <>
-      <h2 className="v3-title">{title}</h2>
-      <p className="v3-sub">{sub}</p>
-      <div className="v3-hero-panel">
-        <Hero pose={pose} size={120} motion={pose === "wave" ? "breathe" : "jump"} />
+    <div className={`shop-stage keeper-${keeper}`}>
+      <div className="shop-bubble" key={say}>
+        <p>{say}</p>
+        <img className="shop-bubble-tail" src="./shop/bubble-tail.svg" alt="" aria-hidden="true" />
       </div>
-    </>
+      <div className="shop-keeper">
+        <img key={keeper} src={`./char/hero_${keeper}.png`} alt="펭귄 점원" draggable={false} />
+      </div>
+      <div className="shop-counter">
+        <i className="shop-counter-top" aria-hidden="true" />
+        <div className="shop-wood shop-counter-body">PENGUIN SHOP</div>
+      </div>
+    </div>
   );
 }
 
 export default function Shop() {
   const state = useAppState();
   const wallet = coins(state);
-  const [popup, setPopup] = useState<Popup>(null);
+  const [view, setView] = useState<View>({ kind: "welcome" });
+  const [confirm, setConfirm] = useState<Gift | null>(null);
+
+  function to(next: View) {
+    sfx.tap();
+    setView(next);
+  }
 
   function open(gift: Gift) {
-    sfx.tap();
     if (wallet < gift.price) {
       sfx.soft();
-      setPopup({ kind: "short", gift });
+      setView({ kind: "short", gift });
     } else {
-      setPopup({ kind: "confirm", gift });
+      sfx.tap();
+      setConfirm(gift);
     }
   }
 
   function buy(gift: Gift) {
+    setConfirm(null);
     const r = buyGift(getState(), { id: makeId("buy"), giftId: gift.id, now: Date.now() });
     if (!r.ok) {
-      setPopup({ kind: "short", gift });
+      setView({ kind: "short", gift });
       return;
     }
     commit(r.state);
     sfx.coin();
-    setPopup({ kind: "done", gift });
+    setView({ kind: "done", gift });
+  }
+
+  function home() {
+    sfx.tap();
+    go("/home");
   }
 
   return (
-    <section className="screen v3 shop-v3" data-testid="screen-shop">
-      <div className="scroll-body">
-        <div className="v3-title-row">
-          <h1 className="v3-title">선물 상점</h1>
-          <V3Coin value={wallet} />
+    <section className="screen shop" data-testid="screen-shop">
+      <header className="shop-head">
+        <div className="shop-sign">
+          <i className="shop-snow" aria-hidden="true" />
+          <div className="shop-wood shop-sign-board">눈꽃 선물 상점</div>
         </div>
-        <p className="v3-sub">조금씩 모아서 가족의 선물을 골라 봐.</p>
+        <div className="shop-bar">
+          <button className="shop-back" onClick={home} data-testid="shop-back">
+            ‹ 모험으로
+          </button>
+          <ShopCoin value={wallet} />
+        </div>
+        <div className="shop-awning" aria-hidden="true">
+          {STRIPES.map((i) => (
+            <i key={i} className={i % 2 === 0 ? "pink" : "cream"} />
+          ))}
+        </div>
+      </header>
 
-        <div className="v3-card wallet-v3">
-          <small>{nick(state.childName)}의 코인</small>
-          <b data-testid="wallet">{wallet.toLocaleString("ko-KR")}</b>
-        </div>
+      <div className="shop-room">
+        <i className="shop-post left" aria-hidden="true" />
+        <i className="shop-post right" aria-hidden="true" />
 
-        <h2 className="v3-section">내가 고를 수 있는 선물</h2>
-        <div className="gift-grid">
-          {state.gifts.map((g) => {
-            const need = g.price - wallet;
-            return (
-              <button key={g.id} className={`gift-v3 ${need > 0 ? "short" : ""}`} onClick={() => open(g)} data-testid={`gift-${g.id}`}>
-                <span className="gift-slot">{g.icon}</span>
-                <b>{g.name}</b>
-                <small>{g.price} 코인</small>
-                {need > 0 && <em>코인 {need}개 더 필요</em>}
-              </button>
-            );
-          })}
-        </div>
-        <p className="v3-sub shop-note-v3">선물은 부모님이 확인한 뒤 받을 수 있어.</p>
+        {view.kind === "welcome" && (
+          <div className="shop-scene" data-testid="shop-welcome">
+            <Counter say="안녕~ 뭐 사러 왔어?" keeper="wave" />
+            <p className="shop-lead">
+              매일 모은 코인으로
+              <br />
+              가족과 특별한 시간을 골라 봐!
+            </p>
+            <button className="shop-btn" onClick={() => to({ kind: "list" })} data-testid="shop-browse">
+              상품 구경하기
+            </button>
+          </div>
+        )}
+
+        {view.kind === "list" && (
+          <div className="shop-list" data-testid="shop-list">
+            {state.gifts.map((g) => {
+              const need = g.price - wallet;
+              return (
+                <button key={g.id} className={`shop-item ${need > 0 ? "short" : ""}`} onClick={() => open(g)} data-testid={`gift-${g.id}`}>
+                  <b>{g.name}</b>
+                  <small>{GIFT_DESC[g.id] ?? "가족과 함께하는 특별한 시간"}</small>
+                  <span className="shop-item-price">
+                    {g.price} 코인 <em>·</em> {need > 0 ? `${need}개 더 모으자` : "구매하기 ›"}
+                  </span>
+                </button>
+              );
+            })}
+            <p className="shop-note">
+              가족과 약속한 선물이에요.
+              <br />
+              구매한 선물은 부모님과 함께 확인해요.
+            </p>
+          </div>
+        )}
+
+        {view.kind === "done" && (
+          <div className="shop-scene" data-testid="buy-done">
+            <Counter say="구매해 줘서 고마워!" keeper="wink" />
+            <div className="shop-bought">
+              <b>{view.gift.name}</b>
+              <small>{view.gift.price} 코인 · 부모님과 함께 확인해요</small>
+            </div>
+            <button className="shop-btn" onClick={() => to({ kind: "list" })} data-testid="done-ok">
+              다른 선물도 볼래
+            </button>
+          </div>
+        )}
+
+        {view.kind === "short" && (
+          <div className="shop-scene" data-testid="buy-short">
+            <Counter say="미안… 코인이 부족해ㅜ" keeper="cry" />
+            <p className="shop-lead">
+              <span data-testid="need-more">{view.gift.price - wallet}코인</span>만 더 모으고 다시 만나!
+              <br />
+              모험을 깨면 코인이 쌓여.
+            </p>
+            <button className="shop-btn" onClick={home} data-testid="short-ok">
+              모험하러 가기
+            </button>
+          </div>
+        )}
       </div>
 
-      {popup?.kind === "confirm" && (
-        <Modal onClose={() => setPopup(null)} testId="buy-confirm">
-          <PopupHead title="이 선물을 살까?" sub="선물 구매 확인" pose="wave" />
+      <footer className="shop-wood shop-floor">
+        {view.kind === "short" && (
+          <button className="shop-floor-link" onClick={() => to({ kind: "list" })} data-testid="short-list">
+            다른 상품 보기
+          </button>
+        )}
+      </footer>
+
+      {confirm && (
+        <Modal onClose={() => setConfirm(null)} testId="buy-confirm">
+          <h2 className="v3-title">이 선물을 살까?</h2>
+          <div className="v3-hero-panel">
+            <Hero pose="wave" size={110} motion="breathe" />
+          </div>
           <div className="v3-card">
             <b>
-              {popup.gift.name} · {popup.gift.price}코인
+              {confirm.name} · {confirm.price}코인
             </b>
             <small>사면 코인이 바로 사용돼. 부모님이 확인한 뒤 받을 수 있어.</small>
           </div>
-          <button className="btn btn-blue btn-lg" onClick={() => buy(popup.gift)} data-testid="buy-ok">
+          <button className="btn btn-blue btn-lg" onClick={() => buy(confirm)} data-testid="buy-ok">
             살래요
           </button>
-          <button className="btn btn-white btn-lg" onClick={() => setPopup(null)} data-testid="buy-cancel">
+          <button className="btn btn-white btn-lg" onClick={() => setConfirm(null)} data-testid="buy-cancel">
             취소
           </button>
         </Modal>
       )}
-      {popup?.kind === "short" && (
-        <Modal onClose={() => setPopup(null)} testId="buy-short">
-          <PopupHead title="코인이 조금 더 필요해" sub="조금씩 모으면 받을 수 있어!" pose="thumbs" />
-          <div className="v3-card">
-            <b>
-              {popup.gift.name} · {popup.gift.price}코인
-            </b>
-            <small>오늘의 작은 미션으로 코인을 모아 봐.</small>
-          </div>
-          <p className="need-more" data-testid="need-more">
-            {popup.gift.price - wallet}코인이 더 필요해요
-          </p>
-          <button className="btn btn-blue btn-lg" onClick={() => setPopup(null)} data-testid="short-ok">
-            확인
-          </button>
-        </Modal>
-      )}
-      {popup?.kind === "done" && (
-        <Modal onClose={() => setPopup(null)} testId="buy-done">
-          <PopupHead title="주문했어요!" sub={`${popup.gift.name} · 구매 완료`} pose="cheer" />
-          <div className="v3-card">
-            <b>{popup.gift.price}코인을 사용했어</b>
-            <small>이제 부모님과 함께할 시간을 약속해 보자.</small>
-          </div>
-          <button className="btn btn-blue btn-lg" onClick={() => setPopup(null)} data-testid="done-ok">
-            확인
-          </button>
-        </Modal>
-      )}
-
-      <KidTabBar active="shop" />
     </section>
   );
 }

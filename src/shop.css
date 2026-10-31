@@ -1,0 +1,542 @@
+/* C9 선물 상점, 피그마 "상점 01~04". 나무 간판, 줄무늬 차양, 기둥, 계산대 뒤 펭귄 점원.
+   치수는 390×844 시안 기준이다. 계산대 장면(.shop-stage)은 320px 폭 안에서 시안 좌표를 그대로 쓴다. */
+.shop {
+  background: linear-gradient(180deg, #a9e6ff 0%, #daf5ff 60%, #a6d9ee 100%);
+  color: #284f75;
+}
+
+/* ---------- 나무 질감: 간판, 계산대, 마루가 함께 쓴다 ---------- */
+.shop-wood {
+  position: relative;
+  border: 2px solid #8b542f;
+  border-radius: 15px;
+  background: linear-gradient(180deg, #e0a165 0%, #cc8a4d 12%, #ab6737 75%, #8e512c 100%);
+  box-shadow:
+    0 10px 15px rgba(71, 110, 133, 0.2),
+    0 6px 0 rgba(98, 63, 44, 0.55),
+    inset 0 -4px 5px rgba(99, 58, 36, 0.35),
+    inset 0 3px 3px rgba(255, 224, 160, 0.75);
+  font-family: var(--jua);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* 나뭇결: 27px 간격의 옅은 줄 */
+.shop-wood::before {
+  content: "";
+  position: absolute;
+  inset: 7px 6px 0;
+  background: repeating-linear-gradient(180deg, rgba(204, 139, 80, 0.43) 0 2px, transparent 2px 27px);
+  pointer-events: none;
+}
+
+/* ---------- 머리: 간판, 뒤로 가기와 코인, 차양 ---------- */
+.shop-head {
+  flex: none;
+  padding-top: max(20px, calc(env(safe-area-inset-top) + 8px));
+  position: relative;
+  z-index: 2;
+}
+
+.shop-sign {
+  position: relative;
+  width: 306px;
+  margin: 0 auto;
+}
+
+.shop-sign-board {
+  height: 67px;
+  color: #fff7d8;
+  font-size: 28px;
+  line-height: 63px;
+}
+
+.shop-snow {
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: -4px;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fff 0%, #f8fdff 55%, #b8e0f3 100%);
+  box-shadow: 0 3px 4px rgba(110, 164, 196, 0.2);
+  z-index: 1;
+}
+
+.shop-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  margin-top: 4px;
+  height: 48px;
+}
+
+.shop-back {
+  min-height: 48px;
+  padding: 0 12px 0 0;
+  font-family: var(--jua);
+  font-size: 15px;
+  color: #24517b;
+}
+
+.shop-coin {
+  min-width: 128px;
+  height: 34px;
+  padding: 0 12px 0 8px;
+  border: 2px solid #fff5cb;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fff3b4 0%, #ffda6a 50%, #e6ae35 100%);
+  box-shadow:
+    0 3px 0 rgba(185, 133, 41, 0.6),
+    inset 0 2px 2px rgba(255, 255, 255, 0.7);
+  font-family: var(--jua);
+  font-size: 15px;
+  line-height: 30px;
+  color: #815019;
+  white-space: nowrap;
+}
+
+.shop-coin i {
+  font-style: normal;
+}
+
+.shop-awning {
+  display: flex;
+  justify-content: center;
+}
+
+.shop-awning i {
+  width: 28.5px;
+  height: 16px;
+  border-radius: 6px;
+  box-shadow:
+    0 3px 3px rgba(124, 114, 132, 0.17),
+    inset 0 2px 2px rgba(255, 255, 255, 0.4);
+}
+
+.shop-awning .pink {
+  background: linear-gradient(180deg, #ffb4c2 0%, #ff819d 45%, #d9557b 100%);
+}
+
+.shop-awning .cream {
+  background: linear-gradient(180deg, #fffbe4 0%, #fff0bb 45%, #dbbd7e 100%);
+}
+
+/* ---------- 가게 안: 양쪽 나무 기둥 사이 ---------- */
+.shop-room {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-post {
+  position: absolute;
+  top: -3px;
+  bottom: 0;
+  width: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #88502d 0%, #d39757 35%, #986033 100%);
+  box-shadow: 0 2px 4px rgba(92, 108, 114, 0.2);
+}
+
+.shop-post.left {
+  left: 11px;
+}
+
+.shop-post.right {
+  right: 11px;
+}
+
+.shop-scene {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0 6px;
+  position: relative;
+}
+
+/* ---------- 말풍선, 펭귄 점원, 계산대 ---------- */
+.shop-stage {
+  position: relative;
+  width: 320px;
+  flex: none;
+}
+
+.shop-bubble {
+  position: relative;
+  z-index: 2;
+  width: 318px;
+  height: 76px;
+  margin: 14px 0 0 1px;
+  border: 2px solid #84c6e5;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #fff 0%, #effaff 100%);
+  box-shadow:
+    0 5px 10px rgba(68, 131, 164, 0.2),
+    inset 0 2px 2px #fff;
+  display: grid;
+  place-items: center;
+  transform-origin: 50% 100%;
+  animation: shop-bubble 0.5s 0.25s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.shop-bubble p {
+  font-family: var(--jua);
+  font-size: 26px;
+  color: #23558b;
+  white-space: nowrap;
+}
+
+.shop-bubble-tail {
+  position: absolute;
+  left: 149.6px;
+  top: 71px;
+  width: 31.634px;
+  height: 30.893px;
+}
+
+.shop-keeper {
+  position: relative;
+  width: 310px;
+  height: 194px;
+  margin: 19px 0 0 5px;
+  overflow: hidden;
+}
+
+.shop-keeper img {
+  position: absolute;
+  max-width: none;
+  transform-origin: 50% 100%;
+  animation:
+    shop-keeper-in 0.6s cubic-bezier(0.3, 1.45, 0.5, 1) both,
+    shop-keeper-bob 2.4s 0.6s ease-in-out infinite;
+}
+
+.keeper-wave .shop-keeper img {
+  filter: drop-shadow(0 10.8px 6.7px rgba(58, 117, 155, 0.16));
+  left: 23px;
+  top: 3px;
+  width: 270px;
+}
+
+.keeper-wink .shop-keeper img {
+  left: -45px;
+  top: 1px;
+  width: 400px;
+  animation:
+    shop-keeper-in 0.6s cubic-bezier(0.3, 1.45, 0.5, 1) both,
+    shop-keeper-hop 1.2s 0.6s ease-in-out infinite;
+}
+
+/* 울음 펭귄은 시안에서 말풍선이 19px 위로, 얼굴 자리가 25px 더 길다 */
+.keeper-cry .shop-bubble {
+  margin-top: -5px;
+}
+
+.keeper-cry .shop-keeper {
+  height: 219px;
+  margin: 13px 0 0 15px;
+}
+
+.keeper-cry .shop-keeper img {
+  left: -37px;
+  top: -8px;
+  width: 384px;
+  animation:
+    shop-keeper-in 0.6s cubic-bezier(0.3, 1.45, 0.5, 1) both,
+    shop-keeper-sob 0.9s 0.6s ease-in-out infinite;
+}
+
+.shop-counter {
+  position: relative;
+  z-index: 1;
+  margin-top: -4px;
+}
+
+.shop-counter-top {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 346px;
+  height: 20px;
+  margin-left: -13px;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #ffe2a5 0%, #f1c080 25%, #d99c57 60%, #a96534 100%);
+  box-shadow:
+    0 4px 4px rgba(119, 72, 42, 0.45),
+    inset 0 2px 2px rgba(255, 241, 206, 0.8);
+}
+
+.shop-counter-body {
+  height: 76px;
+  margin-top: -10px;
+  color: #ffe5b2;
+  font-size: 19px;
+  line-height: 76px;
+}
+
+/* ---------- 아래 문구와 버튼 ---------- */
+.shop-lead {
+  width: 322px;
+  margin-top: 31px;
+  font-family: var(--jua);
+  font-size: 20px;
+  line-height: 1.45;
+  text-align: center;
+  color: #284f75;
+}
+
+.shop-bought {
+  width: 330px;
+  margin-top: 19px;
+  padding: 13px 14px 14px;
+  border-radius: 18px;
+  background: #fff5d6;
+  color: #77502c;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: shop-rise 0.45s 0.35s ease-out both;
+}
+
+.shop-bought b {
+  font-family: var(--jua);
+  font-weight: 400;
+  font-size: 23px;
+}
+
+.shop-bought small {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.shop-btn {
+  flex: none;
+  width: 320px;
+  min-height: 56px;
+  margin-top: auto;
+  border: 2px solid #d2f7ff;
+  border-radius: 17px;
+  background: linear-gradient(180deg, #5edaff 0%, #25bef0 25%, #078acf 100%);
+  box-shadow:
+    0 8px 10px rgba(40, 106, 141, 0.2),
+    0 5px 0 #0b6198,
+    inset 0 -3px 3px rgba(8, 117, 183, 0.3),
+    inset 0 2px 3px rgba(194, 245, 255, 0.7);
+  font-family: var(--jua);
+  font-size: 20px;
+  color: #fff;
+}
+
+.shop-lead,
+.shop-bought {
+  margin-bottom: 20px;
+}
+
+.shop-btn:active {
+  transform: translateY(4px);
+  box-shadow:
+    0 2px 4px rgba(40, 106, 141, 0.2),
+    0 1px 0 #0b6198,
+    inset 0 -3px 3px rgba(8, 117, 183, 0.3),
+    inset 0 2px 3px rgba(194, 245, 255, 0.7);
+}
+
+/* ---------- 상품 진열대 ---------- */
+.shop-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 24px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.shop-item {
+  flex: none;
+  width: 100%;
+  max-width: 342px;
+  min-height: 142px;
+  padding: 17px 18px 14px;
+  border: 2px solid #b87a44;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fffdf1 0%, #fff1d9 80%, #eacda5 100%);
+  box-shadow:
+    0 8px 10px rgba(89, 126, 140, 0.16),
+    0 5px 0 rgba(138, 89, 54, 0.65),
+    inset 0 3px 3px rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  text-align: left;
+  animation: shop-rise 0.4s ease-out both;
+}
+
+.shop-item:nth-child(2) {
+  animation-delay: 0.06s;
+}
+
+.shop-item:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+.shop-item:nth-child(4) {
+  animation-delay: 0.18s;
+}
+
+.shop-item:active {
+  transform: translateY(3px);
+}
+
+.shop-item b {
+  font-family: var(--jua);
+  font-weight: 400;
+  font-size: 23px;
+  color: #614022;
+}
+
+.shop-item small {
+  font-size: 12px;
+  font-weight: 700;
+  color: #7a614b;
+}
+
+.shop-item-price {
+  font-family: var(--jua);
+  font-size: 18px;
+  color: #087caf;
+}
+
+.shop-item-price em {
+  font-style: normal;
+  margin: 0 12px;
+}
+
+/* 코인이 모자란 선물은 연하게 (유저저니 C9) */
+.shop-item.short {
+  opacity: 0.7;
+}
+
+.shop-item.short .shop-item-price {
+  color: #7a614b;
+}
+
+.shop-note {
+  margin-top: 8px;
+  font-family: var(--jua);
+  font-size: 15px;
+  line-height: 1.45;
+  text-align: center;
+  color: #284f75;
+}
+
+/* ---------- 나무 마루 ---------- */
+.shop-floor {
+  flex: none;
+  position: relative;
+  z-index: 1;
+  height: calc(96px + env(safe-area-inset-bottom));
+  margin: -7px -8px 0;
+  border-radius: 15px 15px 0 0;
+  border-bottom: 0;
+}
+
+.shop-floor-link {
+  position: relative;
+  min-height: 48px;
+  margin-top: 10px;
+  padding: 0 24px;
+  font-family: var(--jua);
+  font-size: 16px;
+  color: #fff;
+}
+
+/* ---------- 움직임 ---------- */
+@keyframes shop-keeper-in {
+  0% {
+    transform: translateY(75%) scale(0.92, 1.08);
+  }
+  60% {
+    transform: translateY(-4%) scale(1.03, 0.97);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes shop-keeper-bob {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: translateY(3px) rotate(-1.5deg);
+  }
+}
+
+@keyframes shop-keeper-hop {
+  0%,
+  100% {
+    transform: none;
+  }
+  30% {
+    transform: translateY(-8px) scale(0.98, 1.03);
+  }
+  55% {
+    transform: translateY(0) scale(1.03, 0.97);
+  }
+}
+
+@keyframes shop-keeper-sob {
+  0%,
+  100% {
+    transform: none;
+  }
+  25% {
+    transform: translateY(2px) rotate(-1deg);
+  }
+  75% {
+    transform: translateY(2px) rotate(1deg);
+  }
+}
+
+@keyframes shop-bubble {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shop-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-bubble,
+  .shop-keeper img,
+  .shop-bought,
+  .shop-item {
+    animation: none !important;
+  }
+}
