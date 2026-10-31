@@ -162,3 +162,58 @@ export function nick(name: string): string {
   const hangul = last >= 0xac00 && last <= 0xd7a3;
   return hangul && (last - 0xac00) % 28 !== 0 ? `${name}이` : name;
 }
+
+const KID_TABS: { id: "home" | "shop" | "parent"; label: string; path: string }[] = [
+  { id: "home", label: "홈", path: "/home" },
+  { id: "shop", label: "상점", path: "/shop" },
+  { id: "parent", label: "부모", path: "/parent/pin" }
+];
+
+/** 피그마 지도 화면의 아래 탭: 둥근 사각 아이콘, 지금 탭은 파랑 */
+function KidTabIcon({ id, on }: { id: "home" | "shop" | "parent"; on: boolean }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 26 26" aria-hidden="true">
+      <rect width="26" height="26" rx="6.5" fill={on ? "#2F6FEB" : "#B9BFCC"} />
+      {id === "home" && <path d="M5.41667 13L13 6.5L20.5833 13V20.5833H15.1667V15.1667H10.8333V20.5833H5.41667V13Z" fill="white" />}
+      {id === "shop" && (
+        <path
+          d="M9.75 9.75H6.5L5.41667 21.6667H20.5833L19.5 9.75H16.25M9.75 9.75H16.25M9.75 9.75V7.58333C9.75 6.72138 10.0924 5.89473 10.7019 5.28524C11.3114 4.67574 12.138 4.33333 13 4.33333C13.862 4.33333 14.6886 4.67574 15.2981 5.28524C15.9076 5.89473 16.25 6.72138 16.25 7.58333V9.75"
+          fill="none"
+          stroke="white"
+          strokeWidth="2.16667"
+          strokeLinejoin="round"
+        />
+      )}
+      {id === "parent" && (
+        <>
+          <circle cx="13" cy="8.67" r="3.25" fill="white" />
+          <path d="M6.5 21.6667V18.4167C6.5 16.6928 7.18482 15.0395 8.40381 13.8205C9.62279 12.6015 11.2761 11.9167 13 11.9167C14.7239 11.9167 16.3772 12.6015 17.5962 13.8205C18.8152 15.0395 19.5 16.6928 19.5 18.4167V21.6667" fill="white" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+export function KidTabBar({ active }: { active: "home" | "shop" | "parent" }) {
+  return (
+    <nav className="kid-tabbar" aria-label="아래 탭">
+      {KID_TABS.map((t) => (
+        <button
+          key={t.id}
+          className={`kid-tab ${active === t.id ? "on" : ""}`}
+          data-testid={`tab-${t.id}`}
+          aria-current={active === t.id ? "page" : undefined}
+          onClick={() => {
+            if (active === t.id) return;
+            sfx.tap();
+            if (t.id !== "parent") handoff.parentOk = false;
+            go(t.id === "parent" && handoff.parentOk ? "/parent" : t.path);
+          }}
+        >
+          <KidTabIcon id={t.id} on={active === t.id} />
+          <span>{t.label}</span>
+        </button>
+      ))}
+    </nav>
+  );
+}

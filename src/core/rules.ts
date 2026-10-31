@@ -4,7 +4,7 @@ import {
   COIN_PER_MISSION,
   LAST_STAGE,
   STAGES_PER_CHAPTER,
-  CHAPTER_NAMES,
+  CHAPTERS,
   VIDEO_SECONDS,
   dateKey,
   missionDef,
@@ -47,15 +47,22 @@ export function doneCount(state: AppState, stage = state.stage): number {
 }
 
 export function chapterOf(stage: number): number {
-  return Math.min(CHAPTER_NAMES.length, Math.floor((stage - 1) / STAGES_PER_CHAPTER) + 1);
+  return Math.min(CHAPTERS.length, Math.floor((stage - 1) / STAGES_PER_CHAPTER) + 1);
 }
 
 export function chapterName(stage: number): string {
-  return CHAPTER_NAMES[chapterOf(stage) - 1];
+  return CHAPTERS[chapterOf(stage) - 1].name;
 }
 
 export function stepsToCastle(state: AppState): number {
   return LAST_STAGE - state.stage;
+}
+
+/** 5일마다 반짝 별, 10일마다 챕터 보물 (피그마 지도). 지금은 보여주기만 하고 따로 주지는 않는다 (ADR-013) */
+export function stageReward(stage: number): "star" | "chest" | null {
+  if (stage % 10 === 0) return "chest";
+  if (stage % 5 === 0) return "star";
+  return null;
 }
 
 /** C1 아래 카드: 가장 싼 선물까지 필요한 코인 (유저저니 C1, 가정) */

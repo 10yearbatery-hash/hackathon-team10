@@ -32,3 +32,12 @@
   - `docs/architecture.md`, `plan/plan.md`, `plan/acceptance.json`, `CLAUDE.md` 명령·규칙 작성, ADR-010·012 추가
 - 검증: `npm run test:unit` 15 통과, `npm run build` 통과, `npx playwright test` 3 통과 (시연 시나리오, 다시 찍기·구매·줬어요, 사진 미션·미션 두 개·초기화). 스크린샷 27장을 열어 확인
 - 남은 일: 실기기 카메라 확인, 배포, 독립 리뷰 (`progress/handoff.md`)
+
+## 2026-11-01 04:10 · 아이 영역 피그마 v3 반영 · 대화형 구현
+- 한 일:
+  - 홈을 피그마 02A/02B의 10개 장 그림 지도로 교체 (발판 좌표·재질·발자국·말풍선·장 이름 그대로, `src/ui/MapPath.tsx`, `public/map/`)
+  - 단계 팝업을 DAY 미션 카드로, 촬영·클리어·다시 해보자·상점·구매 팝업을 V3 화면으로 교체 (`src/v3.css`)
+  - O3 하강 연출을 새 지도 기준(마법성 → 1일)으로 변경, 지도용 아래 탭 추가
+  - ADR-013, PRD·유저저니·서비스기획 문구, 아키텍처 갱신
+- 검증: `npm run test:unit` 15 통과, `npm run build` 통과, e2e 3 통과. 지도·DAY 카드·V3 화면 스크린샷을 열어 피그마와 비교
+- 남은 일: 지도 고해상도 원본 교체, 별·보물 보상 규칙, 실기기 확인

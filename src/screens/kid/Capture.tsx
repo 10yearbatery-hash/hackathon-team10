@@ -126,23 +126,23 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
   const progress = def.kind === "video" ? 1 - left / seconds : 0;
 
   return (
-    <section className="screen capture" data-testid="screen-capture">
-      <header className="capture-top">
-        <button className="icon-btn" onClick={() => go(first ? "/setup/mission" : "/home")} aria-label="뒤로" data-testid="back">
-          <Icon name="left" size={24} />
+    <section className="screen v3 capture-v3" data-testid="screen-capture">
+      <header className="capture-head">
+        <button className="back-link" onClick={() => go(first ? "/setup/mission" : "/home")} data-testid="back">
+          ‹ 이전
         </button>
-        <h1>
-          <span className="mission-icon-sm">{def.icon}</span> {def.name}
-        </h1>
-        <span className="timer" data-testid="timer">
-          {def.kind === "video" ? `00:${String(Math.ceil(recording ? left : phase === "ready" ? seconds : 0)).padStart(2, "0")}` : ""}
-        </span>
+        <h1 className="v3-title">{def.kind === "photo" && phase !== "review" ? "사진으로 기록해요" : def.name}</h1>
+        <p className="v3-sub capture-status">
+          {def.kind === "video" ? (recording ? <span className="rec-on">● 녹화 중 · </span> : phase === "review" ? "영상을 다 찍었어! · " : `${def.icon} 영상 · `) : `${def.icon} ${def.name} · `}
+          <span data-testid="timer">{def.kind === "video" ? `00:${String(Math.ceil(recording ? seconds - left : phase === "ready" ? 0 : seconds)).padStart(2, "0")} / 00:${String(seconds).padStart(2, "0")}` : ""}</span>
+          {def.kind === "photo" && (phase === "review" ? "사진을 확인해 줘" : "처음에는 부모님과 같이 해봐도 좋아요.")}
+        </p>
       </header>
       {first && <p className="together" data-testid="together">엄마 아빠랑 같이 해봐요!</p>}
 
       <div className="watch-panel">
         <video src="./media/hero_look.mp4" muted autoPlay loop playsInline aria-label="펭귄이 지켜보고 있어요" />
-        {recording && <span className="watch-say">보고 있어!</span>}
+        <span className="watch-say">{recording ? "보고 있어!" : def.kind === "video" ? "화면은 잠깐 내려놓고 해봐!" : "미션을 마친 모습을 찍어 줘."}</span>
       </div>
 
       <div className="cam-panel" data-testid="cam-panel">
@@ -170,6 +170,9 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
       </div>
 
       {def.kind === "video" && (
+        <p className="rec-left">{recording ? `${Math.ceil(left)}초 남았어요` : phase === "ready" ? `${seconds}초 동안 찍어요` : "다 찍었어요!"}</p>
+      )}
+      {def.kind === "video" && (
         <div className="rec-bar" aria-label="남은 시간">
           <i style={{ width: `${(phase === "review" || phase === "saving" ? 1 : progress) * 100}%` }} />
         </div>
@@ -181,12 +184,12 @@ export default function Capture({ missionId, first = false }: { missionId: Missi
             {!camReady && !error ? "카메라 켜는 중" : def.kind === "video" ? (recording ? "찍는 중..." : "● 시작") : "● 찍기"}
           </button>
         ) : (
-          <button className="btn btn-ghost btn-lg" onClick={retake} disabled={phase === "saving"} data-testid="retake">
+          <button className="btn btn-white btn-lg" onClick={retake} disabled={phase === "saving"} data-testid="retake">
             <Icon name="refresh" size={20} /> 다시 찍기
           </button>
         )}
         <button className="btn btn-blue btn-lg" onClick={submit} disabled={phase !== "review"} data-testid="submit">
-          <Icon name="check" size={22} stroke={3} /> 제출
+          <Icon name="check" size={22} stroke={3} /> 제출하기
         </button>
       </div>
     </section>

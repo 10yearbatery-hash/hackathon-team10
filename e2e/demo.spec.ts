@@ -14,7 +14,7 @@ test("시연 시나리오: 온보딩부터 실패 처리, 미션 관리와 구�
   await expect(page.getByTestId("castle-left")).toContainText("98칸");
   await shot(page, "c1-home-rest");
   await page.getByTestId("stage-3").click();
-  await expect(page.getByTestId("toast")).toHaveText("아직이야!");
+  await expect(page.getByTestId("toast")).toHaveText("아직 열리지 않았어!");
 
   // 7. 상점에서 코인 부족
   await page.getByTestId("tab-shop").click();
@@ -22,7 +22,7 @@ test("시연 시나리오: 온보딩부터 실패 처리, 미션 관리와 구�
   await expect(page.getByText("하늘이의 코인")).toBeVisible();
   await shot(page, "c9-shop");
   await page.getByTestId("gift-g-movie").click();
-  await expect(page.getByTestId("buy-short")).toContainText("코인이 부족합니다");
+  await expect(page.getByTestId("buy-short")).toContainText("코인이 조금 더 필요해");
   await shot(page, "c10-short");
   await page.getByTestId("short-ok").click();
 

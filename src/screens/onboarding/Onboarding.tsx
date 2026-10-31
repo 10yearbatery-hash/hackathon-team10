@@ -6,7 +6,7 @@ import { go } from "../../app/router";
 import { handoff, update } from "../../app/store";
 import { sfx, unlockSound } from "../../platform/sound";
 import { Icon } from "../../ui/icons";
-import { Path, PATH_HEIGHT, stageY } from "../../ui/Path";
+import { MAP_W, MapPath, scrollFor, TOTAL_H } from "../../ui/MapPath";
 import { Hero, nick, PinPad } from "../../ui/parts";
 
 /** 부모 설정 중인 값. O7에서 한 번에 저장한다 */
@@ -100,16 +100,19 @@ export function Descent() {
   useLayoutEffect(() => {
     const el = box.current;
     if (!el) return;
+    const scale = el.clientWidth / MAP_W;
     setWidth(el.clientWidth);
-    el.scrollTop = 0;
-    const target = stageY(1) - el.clientHeight * 0.48;
+    // 피그마 지도는 1일이 맨 위, 100일(마법성)이 맨 아래다. 성에서 시작해 1일까지 올라온다
+    const from = TOTAL_H * scale - el.clientHeight;
+    const target = Math.max(0, scrollFor(1, scale, el.clientHeight));
+    el.scrollTop = from;
     const start = performance.now() + 900;
-    const duration = 5200;
+    const duration = 5600;
     let raf = 0;
     const step = (t: number) => {
       const k = Math.min(1, Math.max(0, (t - start) / duration));
       const ease = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-      el.scrollTop = target * ease;
+      el.scrollTop = from + (target - from) * ease;
       if (k < 1) raf = requestAnimationFrame(step);
       else setDone(true);
     };
@@ -123,8 +126,8 @@ export function Descent() {
 
   return (
     <section className="screen kid descent" data-testid="screen-descent">
-      <div className="path-scroll no-scroll" ref={box} style={{ ["--path-h" as string]: `${PATH_HEIGHT}px` }}>
-        <Path width={width} current={1} resting={false} />
+      <div className="path-scroll no-scroll" ref={box}>
+        <MapPath width={width} current={1} resting={false} />
       </div>
       <div className={`descent-line ${done ? "show" : ""}`} data-testid="descent-line">
         <p>공주를 구하러 가자!</p>
