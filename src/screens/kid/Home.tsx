@@ -104,7 +104,7 @@ export default function Home() {
           {viewChapter + 1}장 {chapter.name}
         </h1>
         <p className="map-left" data-testid="castle-left">
-          공주님 성까지 {100 - state.stage}칸 남았어요!
+          여우 성까지 {100 - state.stage}칸 남았어요!
         </p>
       </header>
 
