@@ -30,9 +30,9 @@
 
 ## 주의할 점
 
-- 저장소 루트의 `남자펭귄.mp4`, `납치.mp4`(01:24~01:25에 생김)는 커밋하지 않았다. 기존 영상과 내용이 다르다. 새 버전이면 `public/media/`의 사본을 바꿔야 한다.
+- 저장소 루트의 `남자펭귄.mp4`, `납치.mp4`는 커밋하지 않았다. `납치.mp4`는 온보딩 영상으로 쓰고 있다. `남자펭귄.mp4`는 아직 쓰지 않는다.
 
 - C 드라이브 여유 공간이 거의 없다 (2026-11-01 기준 약 200MB). e2e는 `TEMP`/`TMP`를 `D:\claude-tmp`로, `--output=/d/claude-tmp/pw-results`로 돌렸다.
-- `public/media/intro.mp4`는 루트의 `온보딩_영상.mp4`, `public/media/hero_look.mp4`는 `assets/character/hero/video/hero_look_idle.mp4`의 사본이다. 원본을 바꾸면 사본도 바꾼다.
+- `public/media/intro.mp4`는 사용자가 세로로 다시 만든 `납치.mp4`(406x720, 저장소 루트, 커밋 안 함), `public/media/hero_look.mp4`는 `assets/character/hero/video/hero_look_idle.mp4`의 사본이다. 원본을 바꾸면 사본도 바꾼다.
 - `public/char/hero_*.png`는 피그마 캐릭터 시트(투명)에서 포즈별로 자른 것이다.
 - 독립 리뷰(`harness/prompts/review.md`)는 돌리지 않았다.

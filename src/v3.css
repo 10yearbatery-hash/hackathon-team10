@@ -109,17 +109,37 @@
 
 .map-say {
   position: absolute;
-  left: 120px;
-  top: 25px;
-  width: 245px;
-  min-height: 54px;
+  z-index: 4;
+  width: 230px;
   padding: 10px 12px;
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 4px 12px rgba(23, 46, 89, 0.13);
+  box-shadow: 0 4px 12px rgba(23, 46, 89, 0.16);
   font-size: 12px;
   font-weight: 700;
   line-height: 1.35;
+  transform: translateY(-100%);
+  transition: left 1.2s cubic-bezier(0.4, 0, 0.2, 1), top 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  animation: say-pop 0.4s ease-out;
+}
+
+@keyframes say-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-85%) scale(0.92);
+  }
+}
+
+.map-say::after {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: var(--tail);
+  margin-left: -8px;
+  border: 8px solid transparent;
+  border-top-color: #fff;
+  border-bottom: 0;
 }
 
 .map-reward {

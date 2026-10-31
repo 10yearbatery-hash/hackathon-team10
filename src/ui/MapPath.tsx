@@ -9,6 +9,9 @@ export const MAP_W = 390;
 export const MAP_H = 1460;
 const STONE_W = 84;
 const STONE_H = 90;
+/** 지도용 펭귄 그림(300x320)을 폭 74로 그린 높이 */
+const HERO_H = 79;
+const SAY_W = 230;
 
 /** 한 장 안 10개 발판의 왼쪽 위 좌표. 모든 장이 같다 */
 const STONES: [number, number][] = [
@@ -89,6 +92,10 @@ export function MapPath({ width, current, resting, onTap, climbFrom = null, shak
   }, [climbFrom, current]);
 
   const hero = stonePos(heroStage);
+  const heroChapter = CHAPTERS[Math.floor((heroStage - 1) / STAGES_PER_CHAPTER)];
+  // 말풍선은 펭귄 머리 위에 띄우고, 지도 밖으로 나가지 않게 좌우를 맞춘다. 꼬리는 펭귄을 가리킨다
+  const heroCenter = hero.x + STONE_W / 2;
+  const sayLeft = Math.min(MAP_W - SAY_W - 8, Math.max(8, heroCenter - SAY_W / 2));
 
   return (
     <div className="map" style={{ width, height: TOTAL_H * scale }}>
@@ -97,11 +104,6 @@ export function MapPath({ width, current, resting, onTap, climbFrom = null, shak
           <section key={i} className="map-chapter" style={{ top: i * MAP_H }} aria-label={`${i + 1}장 ${ch.name}`} data-testid={`chapter-${i + 1}`}>
             <img className="map-bg" src={`./map/ch${i + 1}.jpg`} alt="" draggable={false} />
             {HAS_FOOTPRINTS[i] && <img className="map-steps" src={`./map/path-${i + 1}.svg`} alt="" draggable={false} />}
-            <div className="map-say" style={{ color: ch.sayColor }}>
-              {ch.says.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </div>
             <div className="map-reward" style={{ left: 224, top: 684, color: ch.labelColor }}>
               <b>반짝 별 선물</b>
               <small>{i * 10 + 5}일의 약속</small>
@@ -148,6 +150,18 @@ export function MapPath({ width, current, resting, onTap, climbFrom = null, shak
             </button>
           );
         })}
+
+        {showHero && (
+          <div
+            className="map-say"
+            style={{ left: sayLeft, top: hero.y + 18 - HERO_H - 8, color: heroChapter.sayColor, ["--tail" as string]: `${heroCenter - sayLeft}px` }}
+            data-testid="hero-say"
+          >
+            {heroChapter.says.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        )}
 
         {showHero && (
           <div

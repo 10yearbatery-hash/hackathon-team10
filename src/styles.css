@@ -689,7 +689,8 @@ p {
 
 .intro-video {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
+  object-fit: cover;
   background: #cdeefe;
 }
 

@@ -61,7 +61,7 @@ src/
 public/
   char/                      # 캐릭터 이미지 (피그마 캐릭터 시트에서 포즈별로 자름, 공주·여우 전신)
   map/                       # 장별 지도 그림 ch1~10.jpg, 발판·별·발자국 SVG, 지도용 펭귄 (피그마에서 받음)
-  media/intro.mp4            # 온보딩 납치 영상 (루트의 온보딩_영상.mp4 사본)
+  media/intro.mp4            # 온보딩 납치 영상, 세로 406x720 (사용자가 폰 화면용으로 다시 만든 납치.mp4 사본, 화면을 꽉 채워 재생)
   media/hero_look.mp4        # 촬영 화면 위쪽 펭귄 영상 (assets/character/hero/video 사본)
 e2e/                         # Playwright 스펙, screenshots/ (git 제외)
 ```
