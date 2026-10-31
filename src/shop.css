@@ -150,15 +150,25 @@
   right: 11px;
 }
 
+/* 계산대 장면은 스크롤하지 않는다. 화면이 낮으면 Fit이 .shop-fit 전체를 같은 비율로 줄인다 */
 .shop-scene {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+}
+
+.shop-fit {
+  flex: none;
+  width: 346px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 0 6px;
-  position: relative;
+  padding-bottom: 6px;
+  transform-origin: 50% 0;
 }
 
 /* ---------- 말풍선, 펭귄 점원, 계산대 ---------- */

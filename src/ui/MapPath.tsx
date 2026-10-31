@@ -119,6 +119,11 @@ export function MapPath({ width, current, resting, onTap, climbFrom = null, shak
           </section>
         ))}
 
+        {/* 장과 장이 맞닿는 자리를 구름 띠로 덮어 그림이 딱 끊겨 보이지 않게 한다 */}
+        {CHAPTERS.slice(1).map((_, i) => (
+          <div key={`seam-${i}`} className="map-seam" style={{ top: (i + 1) * MAP_H }} aria-hidden="true" />
+        ))}
+
         {Array.from({ length: LAST_STAGE }, (_, k) => {
           const stage = k + 1;
           const { x, y } = stonePos(stage);

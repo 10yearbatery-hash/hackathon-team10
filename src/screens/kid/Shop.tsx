@@ -1,7 +1,7 @@
 // C9 선물 상점, C10 구매 (이 선물을 살까? / 구매해 줘서 고마워! / 코인이 부족해)
 // 디자인: 피그마 "상점 01 · 어서 와!", "상점 02 · 상품 둘러보기", "상점 03 · 구매 완료", "상점 04 · 크레딧 부족"
 // 나무 간판과 계산대가 있는 가게에서 펭귄 점원이 맞이한다. 피그마의 "크레딧"은 앱 전체 용어에 맞춰 "코인"으로 쓴다.
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import type { Gift } from "../../core/model";
 import { buyGift, coins } from "../../core/rules";
 import { go } from "../../app/router";
@@ -44,6 +44,40 @@ function Counter({ say, keeper }: { say: string; keeper: Keeper }) {
       <div className="shop-counter">
         <i className="shop-counter-top" aria-hidden="true" />
         <div className="shop-wood shop-counter-body">PENGUIN SHOP</div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 계산대 장면을 스크롤 없이 한 화면에 담는다. 장면의 원래 높이를 재서 남은 높이보다 크면
+ * 같은 비율로 줄인다. 키가 큰 화면에서는 원래 크기로 두고 버튼만 아래에 붙인다.
+ */
+function Fit({ children, testId }: { children: ReactNode; testId: string }) {
+  const outer = useRef<HTMLDivElement>(null);
+  const inner = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const o = outer.current;
+    const n = inner.current;
+    if (!o || !n) return;
+    const fit = () => {
+      n.style.transform = "none";
+      n.style.height = "auto";
+      const k = Math.min(1, o.clientHeight / n.offsetHeight);
+      n.style.height = `${o.clientHeight / k}px`;
+      n.style.transform = k < 1 ? `scale(${k})` : "none";
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(o);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div className="shop-scene" ref={outer} data-testid={testId}>
+      <div className="shop-fit" ref={inner}>
+        {children}
       </div>
     </div>
   );
@@ -112,7 +146,7 @@ export default function Shop() {
         <i className="shop-post right" aria-hidden="true" />
 
         {view.kind === "welcome" && (
-          <div className="shop-scene" data-testid="shop-welcome">
+          <Fit testId="shop-welcome">
             <Counter say="안녕~ 뭐 사러 왔어?" keeper="wave" />
             <p className="shop-lead">
               매일 모은 코인으로
@@ -122,7 +156,7 @@ export default function Shop() {
             <button className="shop-btn" onClick={() => to({ kind: "list" })} data-testid="shop-browse">
               상품 구경하기
             </button>
-          </div>
+          </Fit>
         )}
 
         {view.kind === "list" && (
@@ -148,7 +182,7 @@ export default function Shop() {
         )}
 
         {view.kind === "done" && (
-          <div className="shop-scene" data-testid="buy-done">
+          <Fit testId="buy-done">
             <Counter say="구매해 줘서 고마워!" keeper="wink" />
             <div className="shop-bought">
               <b>{view.gift.name}</b>
@@ -157,11 +191,11 @@ export default function Shop() {
             <button className="shop-btn" onClick={() => to({ kind: "list" })} data-testid="done-ok">
               다른 선물도 볼래
             </button>
-          </div>
+          </Fit>
         )}
 
         {view.kind === "short" && (
-          <div className="shop-scene" data-testid="buy-short">
+          <Fit testId="buy-short">
             <Counter say="미안… 코인이 부족해ㅜ" keeper="cry" />
             <p className="shop-lead">
               <span data-testid="need-more">{view.gift.price - wallet}코인</span>만 더 모으고 다시 만나!
@@ -171,7 +205,7 @@ export default function Shop() {
             <button className="shop-btn" onClick={home} data-testid="short-ok">
               모험하러 가기
             </button>
-          </div>
+          </Fit>
         )}
       </div>
 
