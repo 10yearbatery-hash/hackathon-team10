@@ -146,7 +146,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 6px;
+  /* 버튼 아래 입체 그림자가 나무 마루에 가리지 않게 */
+  padding-bottom: 20px;
   transform-origin: 50% 0;
 }
 
